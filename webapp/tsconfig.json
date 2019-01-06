@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "forceConsistentCasingInFileNames": false,
+    "allowSyntheticDefaultImports": true,
+    "target": "es6",
+    "module": "es6",
+    "moduleResolution": "node",
+    "declaration": false,
+    "noImplicitAny": false,
+    "removeComments": true,
+    "experimentalDecorators": true,
+    "noLib": false,
+    "jsx": "preserve",
+    "sourceMap": true,
+    "outDir": "webapp/dist"/*,
+    "lib": [
+      "es5",
+      "dom",
+      "dom.iterable",
+      "es2015"
+    ]*/
+  },
+  "exclude": [
+    "node_modules",
+    "webapp/static"
+  ]
+}

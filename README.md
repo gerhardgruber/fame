@@ -1,11 +1,11 @@
 # fame
 
-fame is a platform which is used by "Niederösterreichische Rettungshunde" (see https://rettungshunde.eu) to manage their members, dogs and their rescue-missions
+fame is a platform which is used by "Rettungshunde Niederösterreich" (see https://rettungshunde.eu) to manage their members, dogs and their rescue-missions
 
 ## Developer installation
 ### Install go
-requires at least go version 1.10 for go dep  
-See https://golang.org  
+requires at least go version 1.10 for go dep
+See https://golang.org
 It is recommended to add the $GOPATH/bin directory to your $PATH variable
 
 ### Install python

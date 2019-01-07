@@ -66,7 +66,7 @@ func GetMobilePhoneOrInsert(newPhone *models.MobilePhone, user *models.User, db 
 
 	if user == nil {
 		var serr *lib.FameError
-		user, serr = GetOrCreateUserByEMail(phone.PhoneNumber, db)
+		user, serr = GetOrCreateUserByName(phone.PhoneNumber, db)
 		if serr != nil {
 			return false, nil, serr
 		}

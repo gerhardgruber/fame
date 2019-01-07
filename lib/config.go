@@ -49,7 +49,7 @@ func NewConfig(fileName string) (*Config, error) {
 		viper.SetConfigFile(fileName)
 	}
 
-	GoogleAPIKey := "AIzaSyDoRrL-eyB59YxKDZkZylTRVCnkIbHkiAQ"
+	GoogleAPIKey := ""
 
 	err := viper.ReadInConfig()
 	if err != nil {
@@ -96,6 +96,9 @@ func NewConfig(fileName string) (*Config, error) {
 	if err != nil {
 		port = 9000
 	}
+
+	GoogleAPIKey := viper.GetString("google.apikey")
+
 	return &Config{DatabaseType: dBType, DatabaseConnectionString: dBConnection, GoogleAPIKey: GoogleAPIKey, I18nBasePath: i18nBasePath, MailUser: MailUser, MailPassword: MailPassword, WebserverPort: port}, nil
 }
 

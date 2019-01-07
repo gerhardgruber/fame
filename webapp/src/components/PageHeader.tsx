@@ -8,6 +8,7 @@ const { Header } = Layout;
 
 export interface PageHeaderProps {
     name: string;
+    renderButtons?: () => JSX.Element;
 }
 
 @observer
@@ -21,10 +22,18 @@ class PageHeader extends React.Component<PageHeaderProps, any> {
     }
 
     render() {
+        let buttons = null;
+        if ( this.props.renderButtons ) {
+            buttons = this.props.renderButtons()
+        }
+
         return (
             <Header>
                 <div style={{ float: "left" }}>
                     <h1 style={{ color: "rgba(255, 255, 255, 0.85)" }}>{this.uiStore.T("HEADING_" + this.props.name)}</h1>
+                </div>
+                <div style={{ float: 'right', marginTop: '1rem' }}>
+                    {buttons}
                 </div>
                 {/* <div style={{ float: "right" }}>
                     <h4 style={{ color: "rgba(255, 255, 255, 0.85)" }}>{moment().format("HH:mm:ss DD.MM.Y")}</h4>

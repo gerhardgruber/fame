@@ -2,6 +2,7 @@ import User from "./User";
 import { map } from 'lodash';
 import Api from "../core/Api";
 import { observable } from 'mobx';
+import {isNil} from 'lodash';
 
 export default class UserStore {
   private static instance: UserStore;
@@ -19,6 +20,12 @@ export default class UserStore {
 
     UserStore.instance = new UserStore();
     return UserStore.instance;
+  }
+
+  public loadUser(id: number): Promise<User> {
+    return Api.GET( `/users/${id}`, {} ).then( ( response ) => {
+      return new User( response.data.data.User );
+    } );
   }
 
   public loadUsers(): Promise<User[]> {

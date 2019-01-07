@@ -95,15 +95,6 @@ class _ChangePassword extends Page<FormComponentProps> {
                   )}
                 </FormItem>
 
-                <div style={{"display": "inline-block", "marginRight": "1rem"}}>
-                  <Button onClick={() => {
-                    this.setState({
-                      gotoOrders: true
-                    });
-                  }}>
-                      {uiStore.T('CANCEL')}
-                  </Button>
-                </div>
                 <div style={{"display": "inline-block"}}>
                   <Button htmlType="submit" type="primary">
                       {uiStore.T('SAVE')}

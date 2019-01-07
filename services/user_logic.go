@@ -34,21 +34,21 @@ func GetUserByID(id uint64, db *gorm.DB) (user *models.User, serr *lib.FameError
 	return user, nil
 }
 
-// GetUserByEMail looks up a User based on their email address
-func GetUserByEMail(email string, db *gorm.DB) (user *models.User, serr *lib.FameError) {
-	email = strings.TrimSpace(email)
+// GetUserByName looks up a User based on their name
+func GetUserByName(name string, db *gorm.DB) (user *models.User, serr *lib.FameError) {
+	name = strings.TrimSpace(name)
 
 	user = &models.User{}
-	err := db.Where(db.L(models.UserT, "EMail").Eq(email)).First(user).Error
+	err := db.Where(db.L(models.UserT, "Name").Eq(name)).First(user).Error
 	if err != nil {
 		if gorm.IsRecordNotFoundError(err) {
 			return nil, lib.ObjectNotFoundError(
-				fmt.Errorf("Could not find user with email '%s': %s", email, err),
+				fmt.Errorf("Could not find user with name '%s': %s", name, err),
 			)
 		}
 
 		return nil, lib.DataCorruptionError(
-			fmt.Errorf("Could not get user by email '%s': %s", email, err),
+			fmt.Errorf("Could not get user by name '%s': %s", name, err),
 		)
 	}
 	return user, nil
@@ -94,22 +94,22 @@ func SaveUser(user *models.User, db *gorm.DB) *lib.FameError {
 	return nil
 }
 
-// GetOrCreateUserByEMail either returns an existing user with the same email address
+// GetOrCreateUserByName either returns an existing user with the same name
 // or creates a new empty one
-func GetOrCreateUserByEMail(email string, db *gorm.DB) (*models.User, *lib.FameError) {
-	email = strings.TrimSpace(email)
+func GetOrCreateUserByName(name string, db *gorm.DB) (*models.User, *lib.FameError) {
+	name = strings.TrimSpace(name)
 
-	if email == "" {
+	if name == "" {
 		return nil, lib.InvalidParamsError(
-			fmt.Errorf("Could get or create user without email"),
+			fmt.Errorf("Could get or create user without name"),
 		)
 	}
 
-	user, serr := GetUserByEMail(email, db)
+	user, serr := GetUserByName(name, db)
 	if serr != nil {
 		if !serr.IsObjectNotFoundError() {
 			return nil, lib.DataCorruptionError(
-				fmt.Errorf("Could not get user by email '%s' for get or create user: %s", email, serr),
+				fmt.Errorf("Could not get user by name '%s' for get or create user: %s", name, serr),
 			)
 		}
 	} else if user != nil {
@@ -117,8 +117,7 @@ func GetOrCreateUserByEMail(email string, db *gorm.DB) (*models.User, *lib.FameE
 	}
 
 	user = &models.User{
-		EMail: email,
-		Name:  email,
+		Name: name,
 	}
 
 	serr = SaveUser(user, db)
@@ -131,7 +130,7 @@ func GetOrCreateUserByEMail(email string, db *gorm.DB) (*models.User, *lib.FameE
 
 // RegisterUser registers a new user if there is no user with the same email address
 // if there is then both the previous user as well as an error is returned
-func RegisterUser(fname, lname, email, lang, pw string, db *gorm.DB) (*models.User, *lib.FameError) {
+func RegisterUser(name, fname, lname, email, lang, pw string, rightType models.UserRightType, db *gorm.DB) (*models.User, *lib.FameError) {
 	email = strings.TrimSpace(email)
 
 	if email == "" {
@@ -140,25 +139,27 @@ func RegisterUser(fname, lname, email, lang, pw string, db *gorm.DB) (*models.Us
 		)
 	}
 
-	user, serr := GetUserByEMail(email, db)
+	user, serr := GetUserByName(name, db)
 	if serr != nil {
 		if !serr.IsObjectNotFoundError() {
 			return nil, lib.DataCorruptionError(
-				fmt.Errorf("Could not get user with email '%s' for registration: %s", serr),
+				fmt.Errorf("Could not get user with name '%s' for registration: %s", name, serr),
 			)
 		}
 	} else if user != nil {
 		return user, lib.WorkflowError(
-			fmt.Errorf("Can not register over existing EMail '%s'", email),
+			fmt.Errorf("Can not register over existing name '%s'", name),
 		)
 	}
 
 	user = &models.User{
+		Name:      name,
 		EMail:     email,
 		FirstName: fname,
 		LastName:  lname,
 		Lang:      lang,
 		PW:        pw,
+		RightType: rightType,
 	}
 
 	serr = CheckPassword(user)

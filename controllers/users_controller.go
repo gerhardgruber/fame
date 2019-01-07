@@ -31,6 +31,42 @@ func getUsers(r *http.Request, params map[string]string, db *gorm.DB, sess *mode
 	})
 }
 
+func createUser(r *http.Request, params map[string]string, db *gorm.DB, sess *models.Session, c *lib.Config) *reply {
+	type createUserParams struct {
+		Name      string
+		FirstName string
+		LastName  string
+		EMail     string
+		PW        string
+		RightType models.UserRightType
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	cup := createUserParams{}
+	err := decoder.Decode(&cup)
+	if err != nil {
+		return Error(*lib.InvalidParamsError(
+			fmt.Errorf("Invalid object while decoding User: %s", err),
+		))
+	}
+
+	u, serr := services.RegisterUser(
+		cup.Name,
+		cup.FirstName,
+		cup.LastName,
+		cup.EMail,
+		"de",
+		cup.PW,
+		cup.RightType,
+		db,
+	)
+	if serr != nil {
+		return Error(*serr)
+	}
+
+	return Success()
+}
+
 func getUser(r *http.Request, params map[string]string, db *gorm.DB, sess *models.Session, c *lib.Config) *reply {
 	userID, err := strconv.ParseUint(params["id"], 0, 64)
 	if err != nil {
@@ -179,6 +215,7 @@ func changePassword(r *http.Request, params map[string]string, db *gorm.DB, sess
 // RegisterUsersControllerRoutes Registers the functions
 func RegisterUsersControllerRoutes(router *mux.Router, config *lib.Config) {
 	router.HandleFunc("/users", serviceWrapperDBAuthenticated("getUsers", getUsers, config)).Methods("GET")
+	router.HandleFunc("/users", serviceWrapperDBAuthenticated("createUser", createUser, config)).Methods("POST")
 	router.HandleFunc("/users/{id:[0-9]+}", serviceWrapperDBAuthenticated("getUser", getUser, config)).Methods("GET")
 	router.HandleFunc("/users/{id:[0-9]+}", serviceWrapperDBAuthenticated("updateUser", updateUserAPI, config)).Methods("POST")
 	router.HandleFunc("/users/{id:[0-9]+}/password", serviceWrapperDBAuthenticated("changePassword", changePassword, config)).Methods("POST")

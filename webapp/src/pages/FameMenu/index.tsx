@@ -7,6 +7,7 @@ import StateStore from '../../stores/StateStore'
 import Scroll from 'react-scrollbar'
 import Api from '../../core/Api';
 import { computed } from 'mobx';
+import { RightType } from '../../stores/User';
 
 const { Header, Footer, Sider, Content } = Layout;
 const { SubMenu } = Menu
@@ -63,11 +64,15 @@ class FameMenu extends React.Component<any,any> {
                             <Icon type="copyright" /> {new Date().getFullYear()} Sophy<br />
                         </div>)
 
-        let entries = [
-            this.makeEntry("users", "user", null),
-            this.makeEntry("changePassword", "setting", null),
-        ]
+        const entries = [];
 
+        if ( this.uiStore.currentUser) {
+            entries.push(this.makeEntry("operations", "notification", null));
+            if (this.uiStore.currentUser.RightType === RightType.ADMIN) {
+                entries.push(this.makeEntry("users", "user", null));
+            }
+            entries.push(this.makeEntry("changePassword", "setting", null));
+        }
 
         return (
             <Sider theme={"light"} style={{ overflow: 'hidden', height: '100vh', position: 'fixed', left: 0 }}

@@ -1,3 +1,7 @@
+export enum RightType {
+  STANDARD = 0,
+  ADMIN = 1,
+}
 class User {
   public ID : number;
 
@@ -13,6 +17,8 @@ class User {
 
   public PW : string;
 
+  public RightType: RightType;
+
   // TODO: Set Company
   constructor( data ) {
     this.setData(data);
@@ -26,6 +32,7 @@ class User {
     this.LastName = data.LastName;
     this.Lang = data.Lang;
     this.PW = data.PW;
+    this.RightType = data.RightType;
 
     return this;
   }
@@ -39,6 +46,16 @@ class User {
       Lang: this.Lang,
       PW: this.PW
     };
+  }
+
+  public getFullName(): string {
+    if ( this.FirstName && this.LastName) {
+      return `${this.FirstName} ${this.LastName}`;
+    } else if ( this.FirstName ) {
+      return this.FirstName;
+    } else {
+      return this.LastName;
+    }
   }
 }
 

@@ -95,7 +95,7 @@ class _UserForm extends React.Component<UserFormProps> {
                     {getFieldDecorator('Name', {
                         rules: [{ required: true, message: uiStore.T("USER_NAME_NOT_GIVEN") }]
                     })(
-                        <Input placeholder={uiStore.T("USER_NAME_PLACEHOLDER")} />
+                        <Input disabled={this.props.user ? true : false} placeholder={uiStore.T("USER_NAME_PLACEHOLDER")} />
                     )}
               </FormItem>
               <FormItem {...uiStore.formItemLayout} label={uiStore.T("USER_FIRST_NAME")} hasFeedback>

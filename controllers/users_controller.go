@@ -157,6 +157,7 @@ func updateUserAPI(r *http.Request, params map[string]string, db *gorm.DB, sess 
 	user.LastName = data.LastName
 	user.EMail = data.EMail
 	user.Lang = data.Lang
+	user.RightType = data.RightType
 
 	err = db.Save(user).Error
 	if err != nil {

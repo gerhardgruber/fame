@@ -48,7 +48,8 @@ class User {
       FirstName: this.FirstName,
       LastName: this.LastName,
       Lang: this.Lang,
-      PW: this.PW
+      PW: this.PW,
+      RightType: this.RightType
     };
   }
 

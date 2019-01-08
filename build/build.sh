@@ -35,7 +35,7 @@ fi
 # copy to remote server
 echo copy to remote server
 scp $GOPATH/bin/fame_server sophy@${FAME_SERVER}:/opt/${DEV_FOLDER}/fame_server/delivery/bin/
-scp ./i18n/* sophy@${FAME_SERVER}:/opt/${DEV_FOLDER}/fameserver/delivery/i18n/
+scp ./i18n/* sophy@${FAME_SERVER}:/opt/${DEV_FOLDER}/fame_server/delivery/i18n/
 scp ./package.json sophy@${FAME_SERVER}:/opt/${DEV_FOLDER}/fame_server/delivery/
 export STATUS=$?
 if [ $STATUS -gt 0 ] ; then

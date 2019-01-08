@@ -87,6 +87,7 @@ func (s *server) run() {
 	lib.MigrateDatabase(db)
 
 	webserverDir, _ := filepath.Abs(filepath.Join(filepath.Dir(os.Args[0]), ".."))
+	log.Infof("Webserver dir: %s", webserverDir)
 
 	log.Info("Started webserver on port ", config.WebserverPort)
 	log.Infof("Serving static files from %s", webserverDir)
@@ -101,7 +102,7 @@ func (s *server) run() {
 	controllers.RegisterStaticsControllerRoutes(webappRouter, config)
 	controllers.RegisterUsersControllerRoutes(webappRouter, config)
 	router.PathPrefix("/dist").Handler(http.StripPrefix("/dist", http.FileServer(http.Dir(filepath.Join(webserverDir, "dist")))))
-	router.PathPrefix("/static").Handler(http.StripPrefix("/static", http.FileServer(http.Dir(filepath.Join(webserverDir, "static")))))
+	router.PathPrefix("/static").Handler(http.StripPrefix("/static", http.FileServer(http.Dir(filepath.Join(webserverDir, "webapp")))))
 	router.Handle("/index.html", serveFile(webserverDir, "index.html"))
 	router.Handle("/package.html", serveFile(webserverDir, "package.html"))
 	router.Handle("/", serveFile(webserverDir, "index.html"))

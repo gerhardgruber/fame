@@ -48,7 +48,6 @@ class App extends React.Component<any,any> {
                             {this.props.children}
                         </Content>
                     </Layout>
-                    {<DevTools />}
                 </Layout>
             );
 

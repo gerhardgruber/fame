@@ -47,17 +47,17 @@ fi
 echo stop, copy and start the service on the remote server
 ssh sophy@${FAME_SERVER} << FINISHED
     if [ "${INSTANCE}" = "TEST" ]; then
-      sudo stop fame_dev
+      sudo stop fame_server_dev
     else
-      sudo stop fame
+      sudo stop fame_server
     fi
     mv /opt/${DEV_FOLDER}/fame_server/delivery/bin/* /opt/${DEV_FOLDER}/fame_server/bin/
     mv /opt/${DEV_FOLDER}/fame_server/delivery/i18n/* /opt/${DEV_FOLDER}/fame_server/i18n/
     mv /opt/${DEV_FOLDER}/fame_server/delivery/package.json /opt/${DEV_FOLDER}/fame_server/
     if [ "${INSTANCE}" = "TEST" ]; then
-      sudo start fame_dev
+      sudo start fame_server_dev
     else
-      sudo start fame
+      sudo start fame_server
     fi
 FINISHED
 

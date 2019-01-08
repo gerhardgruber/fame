@@ -19,7 +19,8 @@ export default class Operations extends Page {
 
   columns = [ {
     title: uiStore.T( 'OPERATIONS_TITLE' ),
-    dataIndex: 'Title'
+    dataIndex: 'Title',
+    sortDirections: []
   } ];
 
   componentDidMount( ) {

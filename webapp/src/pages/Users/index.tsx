@@ -19,13 +19,16 @@ export default class Users extends Page {
 
   columns = [ {
     title: uiStore.T( 'USERS_USER_NAME' ),
-    dataIndex: 'Name'
+    dataIndex: 'Name',
+    sortDirections: []
   }, {
     title: uiStore.T( 'USERS_USER_LAST_NAME' ),
-    dataIndex: 'FirstName'
+    dataIndex: 'FirstName',
+    sortDirections: []
   }, {
     title: uiStore.T( 'USERS_USER_FIRST_NAME' ),
-    dataIndex: 'LastName'
+    dataIndex: 'LastName',
+    sortDirections: []
   } ];
 
   componentDidMount( ) {

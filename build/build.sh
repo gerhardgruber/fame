@@ -3,7 +3,7 @@ set -e
 echo Server build starting
 echo Instanz:     ${INSTANCE}
 echo Tag-Version: ${TAG_VERSION}
-export FAME_SERVER=fame.documatrix.com
+export FAME_SERVER=doctype.documatrix.com
 
 # set folder DEV Prefix
 if [ "${INSTANCE}" = "PROD" ]; then
@@ -84,8 +84,8 @@ fi
 
 echo "Modify API_ROOT"
 if [ "${INSTANCE}" = "PROD" ]; then
-  echo "export const API_ROOT = window.location.protocol + \"//\" + window.location.hostname + \"/api\";" > webapp/config/sophy.ts
-  echo "export const WS_API_ROOT = \"wss://\" + window.location.hostname + \"/wsapi\";" >> webapp/config/sophy.ts
+  echo "export const API_ROOT = window.location.protocol + \"//\" + window.location.hostname + \"/api\";" > webapp/config/fame.ts
+  echo "export const WS_API_ROOT = \"wss://\" + window.location.hostname + \"/wsapi\";" >> webapp/config/fame.ts
 fi
 
 echo "Starting build..."

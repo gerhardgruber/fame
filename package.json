@@ -63,7 +63,7 @@
   },
   "dependencies": {
     "@types/lodash": "^4.14.109",
-    "antd": "^3.8.4",
+    "antd": "3.9.3",
     "antd-mobile": "^2.1.11",
     "axios": "^0.17.1",
     "history": "^4.7.2",

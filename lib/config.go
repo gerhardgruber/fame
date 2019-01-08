@@ -49,8 +49,6 @@ func NewConfig(fileName string) (*Config, error) {
 		viper.SetConfigFile(fileName)
 	}
 
-	GoogleAPIKey := ""
-
 	err := viper.ReadInConfig()
 	if err != nil {
 		return nil, fmt.Errorf("Could not read config file %s! %s", viper.ConfigFileUsed(), err)

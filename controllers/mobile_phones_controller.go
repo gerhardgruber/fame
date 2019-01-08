@@ -141,7 +141,7 @@ func createInitialMobilePhone(w http.ResponseWriter, r *http.Request, c *lib.Con
 	if email == "" {
 		email = req.PhoneNumber
 	}
-	user, serr := services.GetOrCreateUserByEMail(email, db)
+	user, serr := services.GetOrCreateUserByName(email, db)
 	if serr != nil {
 		log.Errorf("Could not get or create user with email '%s': %s", req.EMail, serr)
 		replyError(w, "UserError")

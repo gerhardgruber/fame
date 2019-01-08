@@ -15,48 +15,6 @@ import (
 
 // TODO: Use transactions here as well
 
-// authenticationRegister is called when a user uses the register form
-func authenticationRegister(w http.ResponseWriter, r *http.Request, c *lib.Config) {
-	r.ParseForm()
-
-	req := &struct {
-		EMail     string
-		FirstName string
-		LastName  string
-		Lang      string
-		PW        string
-	}{}
-	err := json.NewDecoder(r.Body).Decode(req)
-	if err != nil {
-		log.Errorf("InvalidObjectError %+v", err)
-		replyError(w, "InvalidObjectError")
-		return
-	}
-	if req.EMail == "" {
-		log.Error("Empty user for authenticate")
-		replyError(w, "NoUserDataError")
-		return
-	}
-
-	db, serr := c.GetDatabaseConnection()
-	if serr != nil {
-		log.Error("Could not get database for register", serr)
-		replyError(w, "DatabaseError")
-		return
-	}
-
-	user, serr := services.RegisterUser(req.FirstName, req.LastName, req.EMail, req.Lang, req.PW, db)
-	if serr != nil {
-		log.Error("Could not create User: ", serr.String())
-		replyFameError(w, *serr)
-		return
-	}
-
-	replyData(w, map[string]interface{}{
-		"user": user,
-	})
-}
-
 func authenticationLogin(w http.ResponseWriter, r *http.Request, c *lib.Config) {
 	r.ParseForm()
 	req := struct {
@@ -138,7 +96,6 @@ func authenticateViaMobilePhone(w http.ResponseWriter, r *http.Request, c *lib.C
 
 // RegisterAuthenticationControllerRoutes Registers the functions
 func RegisterAuthenticationControllerRoutes(router *mux.Router, config *lib.Config) {
-	router.HandleFunc("/authentication/register", serviceWrapper("AuthenticationRegister", authenticationRegister, config)).Methods("POST")
 	router.HandleFunc("/authentication/login", serviceWrapper("AuthenticationLogin", authenticationLogin, config)).Methods("POST")
 	router.HandleFunc("/authentication/logout", serviceWrapperDBAuthenticated("AuthenticationLogout", authenticationLogout, config)).Methods("POST")
 	router.HandleFunc("/app/v1/authentication/mobile_phone", serviceWrapper("AuthenticationMobilePhone", authenticateViaMobilePhone, config)).Methods("POST")

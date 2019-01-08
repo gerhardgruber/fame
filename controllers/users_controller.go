@@ -64,7 +64,9 @@ func createUser(r *http.Request, params map[string]string, db *gorm.DB, sess *mo
 		return Error(*serr)
 	}
 
-	return Success()
+	return Success(map[string]interface{}{
+		"User": u,
+	})
 }
 
 func getUser(r *http.Request, params map[string]string, db *gorm.DB, sess *models.Session, c *lib.Config) *reply {
@@ -85,6 +87,44 @@ func getUser(r *http.Request, params map[string]string, db *gorm.DB, sess *model
 	})
 }
 
+func deleteUser(r *http.Request, params map[string]string, db *gorm.DB, sess *models.Session, c *lib.Config) *reply {
+	id, err := strconv.ParseUint(params["id"], 0, 64)
+	if err != nil {
+		return Error(*lib.InvalidParamsError(
+			fmt.Errorf("User ID could not be parsed: ", err),
+		))
+	}
+
+	if id != *sess.UserID && sess.User.RightType != models.AdminUser {
+		return Error(*lib.PrivilegeError(
+			fmt.Errorf("User ID does not match session or session user is not admin! (%d != %d)", id, *sess.UserID),
+		))
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	data := models.User{}
+	err = decoder.Decode(&data)
+	if err != nil {
+		return Error(*lib.InvalidParamsError(
+			fmt.Errorf("InvalidObjectError %+v", err),
+		))
+	}
+
+	user, serr := services.GetUserByID(id, db)
+	if serr != nil {
+		return Error(*serr)
+	}
+
+	err = db.Delete(user).Error
+	if err != nil {
+		return Error(*lib.DataCorruptionError(
+			fmt.Errorf("DataBaseError %+v", err),
+		))
+	}
+
+	return Success()
+}
+
 func updateUserAPI(r *http.Request, params map[string]string, db *gorm.DB, sess *models.Session, c *lib.Config) *reply {
 	id, err := strconv.ParseUint(params["id"], 0, 64)
 	if err != nil {
@@ -93,7 +133,7 @@ func updateUserAPI(r *http.Request, params map[string]string, db *gorm.DB, sess 
 		))
 	}
 
-	if id != *sess.UserID {
+	if id != *sess.UserID && sess.User.RightType != models.AdminUser {
 		return Error(*lib.PrivilegeError(
 			fmt.Errorf("User ID does not match session! (%d != %d)", id, *sess.UserID),
 		))
@@ -218,6 +258,7 @@ func RegisterUsersControllerRoutes(router *mux.Router, config *lib.Config) {
 	router.HandleFunc("/users", serviceWrapperDBAuthenticated("createUser", createUser, config)).Methods("POST")
 	router.HandleFunc("/users/{id:[0-9]+}", serviceWrapperDBAuthenticated("getUser", getUser, config)).Methods("GET")
 	router.HandleFunc("/users/{id:[0-9]+}", serviceWrapperDBAuthenticated("updateUser", updateUserAPI, config)).Methods("POST")
+	router.HandleFunc("/users/{id:[0-9]+}/delete", serviceWrapperDBAuthenticated("deleteUser", deleteUser, config)).Methods("POST")
 	router.HandleFunc("/users/{id:[0-9]+}/password", serviceWrapperDBAuthenticated("changePassword", changePassword, config)).Methods("POST")
 
 	router.HandleFunc("/app/v1/users/{id:[0-9]+}", serviceWrapperDBAuthenticated("updateUser", updateUser, config)).Methods("POST")

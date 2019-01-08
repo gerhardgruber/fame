@@ -1,3 +1,5 @@
+import {isNil} from 'lodash';
+
 export enum RightType {
   STANDARD = 0,
   ADMIN = 1,
@@ -25,7 +27,9 @@ class User {
   }
 
   public setData(data) {
-    this.ID = data.ID;
+    if (!isNil(data.ID)) {
+      this.ID = data.ID;
+    }
     this.EMail = data.EMail;
     this.Name = data.Name;
     this.FirstName = data.FirstName;

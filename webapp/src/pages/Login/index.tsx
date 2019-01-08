@@ -40,7 +40,7 @@ class _Login extends React.Component<FormComponentProps> {
         return (
             <Form onSubmit={this.handleLogin.bind( this )} >
                 <h1 style={{ marginLeft: "2em", marginTop: "0.5em" }}>
-                    {uiStore.T("LOGIN_TITLE")}
+                    FAME - {uiStore.T("LOGIN_TITLE")}
                 </h1>
                 <FormItem {...uiStore.formItemLayout} label={uiStore.T("LOGIN_USERNAME")} hasFeedback>
                     {getFieldDecorator('username', {

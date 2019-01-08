@@ -1,6 +1,6 @@
 import {action, observable, runInAction, computed, observe, intercept} from 'mobx';
 import Api from '../core/Api';
-import User from './User';
+import User, { RightType } from './User';
 import DateTimeComponent from '../components/DateTimeComponent';
 import moment from 'moment';
 
@@ -130,6 +130,14 @@ class UiStore {
             OldPassword: oldPassword,
             NewPassword: newPassword,
         });
+    }
+
+    public isAdmin(): boolean {
+        if (this.currentUser) {
+            return this.currentUser.RightType === RightType.ADMIN
+        }
+
+        return false;
     }
 }
 

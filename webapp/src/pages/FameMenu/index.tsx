@@ -26,7 +26,6 @@ class FameMenu extends React.Component<any,any> {
     }
 
     handleLogout = (e) => {
-        e.preventDefault()
         this.uiStore.logout()
     }
 

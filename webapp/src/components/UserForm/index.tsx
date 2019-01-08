@@ -6,7 +6,7 @@ import UiStore from "../../stores/UiStore";
 import { Form, Input, Button } from "antd";
 import { WrappedFormUtils } from "antd/lib/form/Form";
 import FormItem from "antd/lib/form/FormItem";
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import UserStore from '../../stores/UserStore';
 import RightTypeSelect from '../RightTypeSelect';
 
@@ -20,14 +20,55 @@ const userStore = UserStore.getInstance();
 
 @observer
 class _UserForm extends React.Component<UserFormProps> {
-  save = (e) => {
+  state = {
+    gotoUsers: false
+  };
 
+  save = (e) => {
+    e.preventDefault();
+
+    this.props.form.validateFields((err, data) => {
+      if (err) {
+        return
+      }
+
+      if (this.props.user) {
+        this.props.user.setData(data);
+        userStore.saveUser(this.props.user).then( () => {
+          userStore.loadUsers().then( () => {
+            this.setState({
+              gotoUsers: true
+            });
+          } );
+        });
+      } else {
+        userStore.createUser(new User(data)).then( () => {
+          userStore.loadUsers().then( () => {
+            this.setState({
+              gotoUsers: true
+            });
+          } );
+        });
+      }
+    });
+  }
+
+  deleteUser = (e) => {
+    e.preventDefault();
+    userStore.deleteUser(this.props.user).then( () => {
+      userStore.loadUsers().then( () => {
+        this.setState({
+          gotoUsers: true
+        });
+      } );
+    });
   }
 
   render(): JSX.Element {
     const { getFieldDecorator } = this.props.form;
 
     let passwordField = null;
+    let deleteButton = null;
     if (!this.props.user) {
       passwordField = <FormItem {...uiStore.formItemLayout} label={uiStore.T("USER_PW")} hasFeedback>
         {getFieldDecorator('PW', {
@@ -36,6 +77,17 @@ class _UserForm extends React.Component<UserFormProps> {
           <Input placeholder={uiStore.T("USER_PW_PLACEHOLDER")} type="password"/>
         )}
       </FormItem>
+    } else {
+      deleteButton = <div style={{"display": "inline-block", "marginRight": "1rem"}}>
+        <Button onClick={this.deleteUser} type="danger">
+          {uiStore.T('DELETE')}
+        </Button>
+      </div>
+    }
+
+    let gotoUsers = null;
+    if (this.state.gotoUsers) {
+      gotoUsers = <Redirect to="/users" />;
     }
 
     return  <Form onSubmit={this.save}>
@@ -75,16 +127,18 @@ class _UserForm extends React.Component<UserFormProps> {
               </FormItem>
               {passwordField}
 
+              {deleteButton}
               <div style={{"display": "inline-block", "marginRight": "1rem"}}>
-                  <Link to="/users"><Button>
-                      {uiStore.T('CANCEL')}
-                  </Button></Link>
-                </div>
-                <div style={{"display": "inline-block"}}>
-                  <Button htmlType="submit" type="primary">
-                      {uiStore.T('SAVE')}
-                  </Button>
-                </div>
+                <Link to="/users"><Button>
+                  {uiStore.T('CANCEL')}
+                </Button></Link>
+              </div>
+              <div style={{"display": "inline-block"}}>
+                <Button htmlType="submit" type="primary">
+                  {uiStore.T('SAVE')}
+                </Button>
+              </div>
+              {gotoUsers}
             </Form>
   }
 }

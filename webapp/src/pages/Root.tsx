@@ -14,6 +14,8 @@ import ChangePassword from './ChangePassword';
 import Operations from './Operations';
 import { EditUser } from './Users/edit';
 import UserStore from '../stores/UserStore';
+import { RightType } from '../stores/User';
+import { EditOperation } from './Operations/edit';
 
 const uiStore = UiStore.getInstance();
 const userStore = UserStore.getInstance();
@@ -31,6 +33,14 @@ export class Root extends React.Component {
                             <App>
                                 <Route exact path="/" component={Operations} />
                                 <Route exact path="/operations" component={Operations} />
+                                <Route path="/operations/new" exact component={EditOperation} />
+                                <Route path="/operations/:id" render={( { match } ) => {
+                                    if ( match.params.id !== "new" ) {
+                                        return <EditOperation operationID={parseInt(match.params.id)} />
+                                    } else {
+                                        return null;
+                                    }
+                                } } />
                                 <Route path="/changePassword" component={ChangePassword} />
                                 <Route path="/users" exact component={Users} />
                                 <Route path="/users/new" exact component={EditUser} />

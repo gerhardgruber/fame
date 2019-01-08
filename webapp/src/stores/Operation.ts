@@ -1,3 +1,4 @@
+import {isNil} from 'lodash';
 
 class Operation {
   public ID : number;
@@ -14,7 +15,9 @@ class Operation {
   }
 
   public setData(data) {
-    this.ID = data.ID;
+    if (!isNil(data.ID)) {
+      this.ID = data.ID;
+    }
     this.Title = data.Title;
     this.FirstName = data.FirstName;
     this.LastName = data.LastName;

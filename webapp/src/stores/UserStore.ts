@@ -37,4 +37,16 @@ export default class UserStore {
       return this.users;
     } );
   }
+
+  public saveUser(user: User): Promise<void> {
+    return Api.POST(`/users/${user.ID}`, user.getData());
+  }
+
+  public createUser(user: User): Promise<void> {
+    return Api.POST(`/users`, user.getData());
+  }
+
+  public deleteUser(user: User): Promise<void> {
+    return Api.POST(`/users/${user.ID}/delete`, {});
+  }
 }

@@ -60,7 +60,7 @@ class FameMenu extends React.Component<any,any> {
                          </div>)
 
         let copyright = (<div style={{ display: "inline-block" }}>
-                            <Icon type="copyright" /> {new Date().getFullYear()} Sophy<br />
+                            <Icon type="copyright" /> {new Date().getFullYear()} Fame<br />
                         </div>)
 
         const entries = [];

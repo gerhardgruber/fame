@@ -60,5 +60,5 @@ class _EditOperation extends Page<EditOperationProps, EditOperationState> {
   }
 }
 
-const EditOperation = Form.create()(_EditOperation);
+const EditOperation = Form.create<EditOperationProps>()(_EditOperation);
 export {EditOperation};

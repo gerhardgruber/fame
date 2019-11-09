@@ -8,6 +8,9 @@ import (
 // MigrateDatabase TODO
 func MigrateDatabase(db *gorm.DB) {
 	db.AutoMigrate(models.AddressT)
+	db.AutoMigrate(models.DateT)
+	db.AutoMigrate(models.DateCategoryT)
+	db.AutoMigrate(models.DateFeedbackT)
 	db.AutoMigrate(models.MobilePhoneT)
 	db.AutoMigrate(models.MobilePhoneLogT)
 	db.AutoMigrate(models.OperationT)

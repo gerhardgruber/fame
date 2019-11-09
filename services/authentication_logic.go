@@ -56,7 +56,7 @@ func LoginHandler(c *lib.Config, db *gorm.DB, userName string, password string) 
 func MobilePhoneLoginHandler(c *lib.Config, db *gorm.DB, phoneID uint64, passcode string) (*models.Session, *models.MobilePhone, error) {
 	var mobilePhone models.MobilePhone
 
-	cnt := db.Where(db.L(models.MobilePhoneT, "ID").Eq(phoneID)).Preload("User").Preload("Truck").First(&mobilePhone).RowsAffected
+	cnt := db.Where(db.L(models.MobilePhoneT, "ID").Eq(phoneID)).Preload("User").First(&mobilePhone).RowsAffected
 
 	if mobilePhone.PasscodeHash == "" {
 		ph, err := models.HashPassword(passcode)
@@ -87,7 +87,7 @@ func MobilePhoneLoginHandler(c *lib.Config, db *gorm.DB, phoneID uint64, passcod
 		return nil, nil, fmt.Errorf("Wrong user credentials")
 	}
 
-	session, err := CreateSession(db, &mobilePhone.User, models.PhoneBrowserInfo)
+	session, err := CreateSession(db, mobilePhone.User, models.PhoneBrowserInfo)
 	if err != nil {
 		return nil, nil, fmt.Errorf("Error creating new session! %s", err)
 	}

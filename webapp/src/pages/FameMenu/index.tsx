@@ -54,9 +54,11 @@ class FameMenu extends React.Component<any,any> {
     }
 
     render() {
-        let userdescr = (<div style={{ display: "inline-block", textAlign: "left", marginLeft: 10, width: 136 }} >
-                            <span style={{ fontSize: 16 }} ><b>{this.uiStore.username}</b></span><br/>
-                            <span>{this.uiStore.DateTime(this.uiStore.loginTime)}</span>
+        let userdescr = (<div style={{ display: "inline-block", textAlign: "center", marginLeft: 10, width: 136 }} >
+                            <div style={{paddingBottom: '0.5rem'}}>
+                                <img style={{height: '80px'}} src="/static/logo.jpg" alt="Logo" />
+                            </div>
+                            <span style={{ fontSize: 16 }} >{this.uiStore.currentUser ? this.uiStore.currentUser.getFullName() : ""}</span>
                          </div>)
 
         let copyright = (<div style={{ display: "inline-block" }}>
@@ -66,7 +68,9 @@ class FameMenu extends React.Component<any,any> {
         const entries = [];
 
         if ( this.uiStore.currentUser) {
-            entries.push(this.makeEntry("operations", "notification", null));
+            entries.push(this.makeEntry("dates", "calendar", null));
+            entries.push(this.makeEntry("date_categories", "container", null));
+            //entries.push(this.makeEntry("operations", "notification", null));
             if (this.uiStore.currentUser.RightType === RightType.ADMIN) {
                 entries.push(this.makeEntry("users", "user", null));
             }
@@ -81,9 +85,6 @@ class FameMenu extends React.Component<any,any> {
                 <div style={{ textAlign: "center" }}>
                     <div style={{marginTop: '10px'}}>
                         <div>
-                            <div style={{ display: "inline-block" }} >
-                                <Icon type="user" style={{ fontSize: 40 }} />
-                            </div>
                             {this.state.collapsed || userdescr}
                         </div>
                     </div>

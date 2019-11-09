@@ -1,6 +1,7 @@
 package models
 
 import (
+	"crypto/sha512"
 	"fmt"
 
 	"golang.org/x/crypto/bcrypt"
@@ -47,12 +48,15 @@ const (
 
 // ComparePassword compares Password from DB with login PWD
 func ComparePassword(hashedPassword string, plaintextPassword string) bool {
-	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(passwordPepper+plaintextPassword)) == nil
+	hashedSecret := sha512.Sum512([]byte(passwordPepper + plaintextPassword))
+	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), hashedSecret[:]) == nil
 }
 
 // HashPassword hashes the password before storing in db
 func HashPassword(password string) (string, error) {
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(passwordPepper+password), bcrypt.DefaultCost)
+	hashedSecret := sha512.Sum512([]byte(passwordPepper + password))
+
+	hashedPassword, err := bcrypt.GenerateFromPassword(hashedSecret[:], bcrypt.DefaultCost)
 	if err != nil {
 		return "", err
 	}

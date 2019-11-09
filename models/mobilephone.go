@@ -34,7 +34,7 @@ type MobilePhone struct {
 	PasscodeHash string
 
 	UserID uint64
-	User   User
+	User   *User
 }
 
 // ColumnPrefix implements the gorm columnPrefixer interface

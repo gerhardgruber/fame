@@ -1,3 +1,5 @@
 database:
   type: mysql
-  connection: root@tcp(127.0.0.1:3306)/fame?charset=utf8&parseTime=True&loc=Local
+  connection: root@tcp(192.168.177.1:3306)/fame?charset=utf8&parseTime=True&loc=Local
+google:
+  apikey: AIzaSyDqt0EDoSpLn_lumDvpHDbryXlbg1ZoEaE

@@ -157,3 +157,14 @@ func UpdatePhone(phone *models.MobilePhone, db *gorm.DB) *lib.FameError {
 	}
 	return nil
 }
+
+func GetMobilePhoneByUserID(db *gorm.DB, userID uint64) (*models.MobilePhone, *lib.FameError) {
+	phone := &models.MobilePhone{}
+	err := db.Model(phone).Where(db.L(phone, "UserID").Eq(userID)).FirstOrCreate(&phone).Error
+	if err != nil {
+		return nil, lib.DataCorruptionError(fmt.Errorf("Error while getting/creating mobile phone for user ID %d! %s", userID, err))
+	}
+	phone.UserID = userID
+
+	return phone, nil
+}

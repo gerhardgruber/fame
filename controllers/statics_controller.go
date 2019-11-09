@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gerhardgruber/fame/lib"
+	"github.com/gerhardgruber/fame/models"
 	"github.com/gerhardgruber/fame/services"
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
@@ -32,9 +33,11 @@ func statics(w http.ResponseWriter, r *http.Request, c *lib.Config) {
 			return
 		}
 		replyData(w, map[string]interface{}{
-			"logged_in":        false,
-			"translation_data": translationData,
-			"language":         lang,
+			"logged_in":           false,
+			"translation_data":    translationData,
+			"language":            lang,
+			"date_types":          models.DateTypes,
+			"date_feedback_types": models.DateFeedbackTypes,
 		})
 		return
 	}
@@ -48,12 +51,14 @@ func statics(w http.ResponseWriter, r *http.Request, c *lib.Config) {
 		return
 	}
 	replyData(w, map[string]interface{}{
-		"logged_in":        true,
-		"login_name":       user.Name,
-		"login_time":       session.CreatedAt,
-		"translation_data": translationData,
-		"language":         language,
-		"UserID":           user.ID,
+		"logged_in":           true,
+		"login_name":          user.Name,
+		"login_time":          session.CreatedAt,
+		"translation_data":    translationData,
+		"language":            language,
+		"UserID":              user.ID,
+		"date_types":          models.DateTypes,
+		"date_feedback_types": models.DateFeedbackTypes,
 	})
 }
 

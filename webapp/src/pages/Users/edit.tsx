@@ -60,5 +60,5 @@ class _EditUser extends Page<EditUserProps, EditUserState> {
   }
 }
 
-const EditUser = Form.create()(_EditUser);
+const EditUser = Form.create<EditUserProps>()(_EditUser);
 export {EditUser};

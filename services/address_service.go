@@ -125,6 +125,7 @@ func Geocode(address string, c *lib.Config) (*googleGeocodeResponse, error) {
 		geoCoder = &geo.GoogleGeocoder{}
 	}
 
+	fmt.Printf("request: %s\n", fmt.Sprintf("address=%s&key=%s", url.QueryEscape(address), c.GoogleAPIKey))
 	resData, err := geoCoder.Request(fmt.Sprintf("address=%s&key=%s", url.QueryEscape(address), c.GoogleAPIKey))
 	if err != nil {
 		log.Errorf("Error while getting Point: %+v", err)

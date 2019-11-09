@@ -28,7 +28,7 @@ type wrappedServiceFunction func(http.ResponseWriter, *http.Request)
 func serviceWrapper(name string, fun serviceFunction, conf *lib.Config) wrappedServiceFunction {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		fun(w, r, conf)
 
 	}

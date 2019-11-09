@@ -20,7 +20,7 @@ const fs  = require('fs');
         extensions: ['.js', '.ts', '.tsx', '.json']
       },
       module: {
-        loaders: [{
+        rules: [{
           test: /\.tsx?$/,
           loaders: ['babel-loader?presets[]=react', 'ts-loader'],
           exclude: /node_modules/

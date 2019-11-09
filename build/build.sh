@@ -100,7 +100,7 @@ sed -i 's/bundle.js/bundle-'"${VERSION}"'.js/g' webapp/dist.html
 scp webapp/dist/* sophy@${FAME_SERVER}:/opt/${DEV_FOLDER}/fame_server/webapp/
 scp webapp/dist/bundle.js sophy@${FAME_SERVER}:/opt/${DEV_FOLDER}/fame_server/webapp/bundle-${VERSION}.js
 #scp webapp/static/*.png sophy@${FAME_SERVER}:/opt/${DEV_FOLDER}/fame_server/webapp/
-#scp webapp/static/*.jpg sophy@${FAME_SERVER}:/opt/${DEV_FOLDER}/fame_server/webapp/
+scp webapp/static/*.jpg sophy@${FAME_SERVER}:/opt/${DEV_FOLDER}/fame_server/webapp/
 scp webapp/dist.html sophy@${FAME_SERVER}:/opt/${DEV_FOLDER}/fame_server/webapp/index.html
 export STATUS=$?
 if [ $STATUS -gt 0 ] ; then

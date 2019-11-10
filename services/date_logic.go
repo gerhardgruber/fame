@@ -22,7 +22,7 @@ type CreateUpdateDateParams struct {
 func GetDates(db *gorm.DB, loadPastDates bool) (dates *[]models.Date, serr *lib.FameError) {
 	dates = &[]models.Date{}
 
-	q := db
+	q := db.Order(db.L(models.DateT, "StartTime").OrderAsc())
 	if !loadPastDates {
 		q = q.Where(
 			db.L(models.DateT, "EndTime").Gt(time.Now()),

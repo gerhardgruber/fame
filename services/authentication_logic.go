@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"fmt"
+	"strings"
 
 	"github.com/gerhardgruber/fame/lib"
 	"github.com/gerhardgruber/fame/models"
@@ -34,7 +35,7 @@ func CheckSession(sessionKey string, db *gorm.DB) (*models.Session, *lib.FameErr
 func LoginHandler(c *lib.Config, db *gorm.DB, userName string, password string) (*models.User, *models.Session, error) {
 	var user models.User
 
-	cnt := db.Debug().Where(db.L(models.UserT, "Name").Eq(userName)).
+	cnt := db.Debug().Where("lower("+db.C(models.UserT, "Name")+") = ?", strings.ToLower(userName)).
 		First(&user).RowsAffected
 
 	// Always done to prevent timing attacks

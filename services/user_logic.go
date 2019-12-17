@@ -13,7 +13,7 @@ import (
 // GetUsers loads all users
 func GetUsers(db *gorm.DB) (users *[]models.User, serr *lib.FameError) {
 	users = &[]models.User{}
-	if err := db.Find(users).Error; err != nil {
+	if err := db.Model(models.UserT).Order(db.L(models.UserT, "Name").OrderAsc()).Find(users).Error; err != nil {
 		return nil, lib.DataCorruptionError(
 			fmt.Errorf("Could not get users: %s", err),
 		)

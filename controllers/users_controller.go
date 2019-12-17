@@ -263,4 +263,5 @@ func RegisterUsersControllerRoutes(router *mux.Router, config *lib.Config) {
 	router.HandleFunc("/users/{id:[0-9]+}/password", serviceWrapperDBAuthenticated("changePassword", changePassword, config)).Methods("POST")
 
 	router.HandleFunc("/app/v1/users/{id:[0-9]+}", serviceWrapperDBAuthenticated("updateUser", updateUser, config)).Methods("POST")
+	router.HandleFunc("/app/v1/users/{id:[0-9]+}/password", serviceWrapperDBAuthenticated("changePassword", changePassword, config)).Methods("POST")
 }

@@ -46,6 +46,18 @@ export class DateModel {
     this.Feedbacks = [];
   }
 
+  public get orderedFeedbacks(): DateFeedback[] {
+    return this.Feedbacks.sort((a, b) => {
+      if (a.Feedback < b.Feedback) {
+        return -1;
+      } else if ( a.Feedback > b.Feedback) {
+        return 1;
+      } else {
+        return a.User.LastName.localeCompare(a.User.LastName)
+      }
+    })
+  }
+
   public calculateFeedbacks(feedbacks: any[], users: User[]) {
     const uiStore = UiStore.getInstance();
 

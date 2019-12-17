@@ -12,6 +12,8 @@ import moment from 'moment';
 import ButtonGroup from 'antd/lib/button/button-group';
 import { ButtonProps } from 'antd/lib/button';
 import DateCategoryStore from '../../stores/DateCategoryStore';
+import { computed } from 'mobx';
+import { RightType } from '../../stores/User';
 
 interface DateFormProps {
   date?: DateModel;
@@ -99,17 +101,27 @@ class _DateForm extends React.Component<DateFormProps> {
     </ButtonGroup>
   };
 
+  renderFeedbackIcon(feedback: number) {
+    if (feedback === uiStore.dateFeedbackTypes["Yes"]) {
+      return <Icon style={{color: 'green'}} type="check-circle" />;
+    } else if (feedback === uiStore.dateFeedbackTypes["No"]) {
+      return <Icon style={{color: 'red'}} type="close-circle" />;
+    } else {
+      return <Icon style={{color: 'orange'}} type="warning" />;
+    }
+  }
+
   renderFeedbacks = (): JSX.Element  => {
     if (this.props.date) {
       return <div style={{marginBottom: '2rem'}}>
         <h1>{uiStore.T('DATE_FEEDBACKS')}</h1>
         <List
-          dataSource={this.props.date.Feedbacks}
+          dataSource={this.props.date.orderedFeedbacks}
           bordered={false}
           renderItem={(item: DateFeedback) => {
             return <List.Item>
               <span style={{marginRight: '1rem'}}>
-                {item.Feedback === uiStore.dateFeedbackTypes["Yes"] ? <Icon style={{color: 'green'}} type="check-circle" /> : <Icon style={{color: 'red'}} type="close-circle" />}
+                {this.renderFeedbackIcon(item.Feedback)}
               </span>
               {item.User.FirstName} {item.User.LastName}
               {this.renderAnswerButton(item)}
@@ -121,12 +133,14 @@ class _DateForm extends React.Component<DateFormProps> {
     return null;
   }
 
-  render(): JSX.Element {
-    if (!uiStore.dateTypes) {
-      return <Spin />;
-    }
+  @computed get editable(): boolean {
+    return uiStore.currentUser.RightType === RightType.ADMIN;
+  }
 
-    const { getFieldDecorator } = this.props.form;
+  renderButtons(): JSX.Element[] {
+    if (!this.editable) {
+      return null;
+    }
 
     let deleteButton = null;
     if (this.props.date) {
@@ -136,6 +150,28 @@ class _DateForm extends React.Component<DateFormProps> {
         </Button>
       </div>
     }
+
+    return [
+      deleteButton,
+      <div style={{"display": "inline-block", "marginRight": "1rem"}}>
+        <Link to="/dates"><Button>
+          {uiStore.T('CANCEL')}
+        </Button></Link>
+      </div>,
+      <div style={{"display": "inline-block"}}>
+        <Button htmlType="submit" type="primary">
+          {uiStore.T('SAVE')}
+        </Button>
+      </div>
+    ]
+  }
+
+  render(): JSX.Element {
+    if (!uiStore.dateTypes) {
+      return <Spin />;
+    }
+
+    const { getFieldDecorator } = this.props.form;
 
     let gotoDates = null;
     if (this.state.gotoDates) {
@@ -151,38 +187,38 @@ class _DateForm extends React.Component<DateFormProps> {
                     {getFieldDecorator('Title', {
                         rules: [{ required: true, message: uiStore.T("DATE_TITLE_NOT_GIVEN") }]
                     })(
-                        <Input placeholder={uiStore.T("DATE_TITLE_PLACEHOLDER")} />
+                        <Input disabled={!this.editable} placeholder={uiStore.T("DATE_TITLE_PLACEHOLDER")} />
                     )}
               </FormItem>
               <FormItem {...uiStore.formItemLayout} label={uiStore.T("DATE_DESCRIPTION")} hasFeedback>
                     {getFieldDecorator('Description', {})(
-                        <TextArea placeholder={uiStore.T("DATE_DESCRIPTION_PLACEHOLDER")} />
+                        <TextArea disabled={!this.editable} placeholder={uiStore.T("DATE_DESCRIPTION_PLACEHOLDER")} />
                     )}
               </FormItem>
               <FormItem {...uiStore.formItemLayout} label={uiStore.T("DATE_LOCATION")} hasFeedback>
                     {getFieldDecorator('Location', {
                         rules: [{ required: true, message: uiStore.T("DATE_LOCATION_NOT_GIVEN") }]
                     })(
-                        <Input placeholder={uiStore.T("DATE_LOCATION_PLACEHOLDER")} />
+                        <Input disabled={!this.editable} placeholder={uiStore.T("DATE_LOCATION_PLACEHOLDER")} />
                     )}
               </FormItem>
               <FormItem {...uiStore.formItemLayout} label={uiStore.T("DATE_START_TIME")} hasFeedback>
                     {getFieldDecorator('StartTime', {
                         rules: [{ required: true, message: uiStore.T("DATE_START_TIME_NOT_GIVEN") }]
                     })(
-                        <DatePicker showTime={true} placeholder={uiStore.T("DATE_START_TIME_PLACEHOLDER")} />
+                        <DatePicker disabled={!this.editable} showTime={true} placeholder={uiStore.T("DATE_START_TIME_PLACEHOLDER")} />
                     )}
               </FormItem>
               <FormItem {...uiStore.formItemLayout} label={uiStore.T("DATE_END_TIME")} hasFeedback>
                     {getFieldDecorator('EndTime', {
                         rules: [{ required: true, message: uiStore.T("DATE_END_TIME_NOT_GIVEN") }]
                     })(
-                        <DatePicker showTime={true} placeholder={uiStore.T("DATE_END_TIME_PLACEHOLDER")} />
+                        <DatePicker disabled={!this.editable} showTime={true} placeholder={uiStore.T("DATE_END_TIME_PLACEHOLDER")} />
                     )}
               </FormItem>
               <FormItem {...uiStore.formItemLayout} label={uiStore.T("DATE_CATEGORY")} hasFeedback>
                     {getFieldDecorator('CategoryID', {})(
-                        <Select>
+                        <Select disabled={!this.editable}>
                           {dateCategories}
                         </Select>
                     )}
@@ -190,17 +226,7 @@ class _DateForm extends React.Component<DateFormProps> {
 
               {this.renderFeedbacks()}
 
-              {deleteButton}
-              <div style={{"display": "inline-block", "marginRight": "1rem"}}>
-                <Link to="/dates"><Button>
-                  {uiStore.T('CANCEL')}
-                </Button></Link>
-              </div>
-              <div style={{"display": "inline-block"}}>
-                <Button htmlType="submit" type="primary">
-                  {uiStore.T('SAVE')}
-                </Button>
-              </div>
+              {this.renderButtons()}
               {gotoDates}
             </Form>
   }

@@ -7,6 +7,7 @@ import DateStore from '../../stores/DateStore';
 import {Link, Redirect} from 'react-router-dom';
 import { DateModel } from '../../stores/DateStore/Date';
 import moment from 'moment';
+import { RightType } from '../../stores/User';
 
 const dateStore = DateStore.getInstance( );
 const uiStore = UiStore.getInstance( );
@@ -49,6 +50,10 @@ export default class Dates extends Page {
   }
 
   renderButtons(): JSX.Element {
+    if (!uiStore.currentUser || uiStore.currentUser.RightType !== RightType.ADMIN) {
+      return null;
+    }
+
     return <Link to="/dates/new"><Button>
       {uiStore.T( 'DATES_ADD_DATE' )}
     </Button></Link>

@@ -22,11 +22,11 @@ export default class Users extends Page {
     dataIndex: 'Name',
     sortDirections: []
   }, {
-    title: uiStore.T( 'USERS_USER_LAST_NAME' ),
+    title: uiStore.T( 'USERS_USER_FIRST_NAME' ),
     dataIndex: 'FirstName',
     sortDirections: []
   }, {
-    title: uiStore.T( 'USERS_USER_FIRST_NAME' ),
+    title: uiStore.T( 'USERS_USER_LAST_NAME' ),
     dataIndex: 'LastName',
     sortDirections: []
   } ];

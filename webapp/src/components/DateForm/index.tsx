@@ -134,7 +134,7 @@ class _DateForm extends React.Component<DateFormProps> {
   }
 
   @computed get editable(): boolean {
-    return uiStore.currentUser.RightType === RightType.ADMIN;
+    return uiStore.isAdmin();
   }
 
   renderButtons(): JSX.Element[] {

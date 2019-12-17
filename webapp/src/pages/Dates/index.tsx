@@ -50,7 +50,7 @@ export default class Dates extends Page {
   }
 
   renderButtons(): JSX.Element {
-    if (!uiStore.currentUser || uiStore.currentUser.RightType !== RightType.ADMIN) {
+    if (!uiStore.isAdmin()) {
       return null;
     }
 

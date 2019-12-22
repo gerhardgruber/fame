@@ -116,16 +116,22 @@ class _DateForm extends React.Component<DateFormProps> {
       return <div style={{marginBottom: '2rem'}}>
         <h1>{uiStore.T('DATE_FEEDBACKS')}</h1>
         <List
-          dataSource={this.props.date.orderedFeedbacks}
+          dataSource={this.props.date.orderedFeedbacksWithHeaders}
           bordered={false}
-          renderItem={(item: DateFeedback) => {
-            return <List.Item>
-              <span style={{marginRight: '1rem'}}>
-                {this.renderFeedbackIcon(item.Feedback)}
-              </span>
-              {item.User.FirstName} {item.User.LastName}
-              {this.renderAnswerButton(item)}
-            </List.Item>
+          renderItem={(item) => {
+            if (item instanceof DateFeedback) {
+              return <List.Item>
+                <span style={{marginRight: '1rem'}}>
+                  {this.renderFeedbackIcon(item.Feedback)}
+                </span>
+                {item.User.FirstName} {item.User.LastName}
+                {this.renderAnswerButton(item)}
+              </List.Item>
+            } else {
+              return <List.Item>
+                <b>{uiStore.T( `DATE_FEEDBACK_${item.Feedback}` ) + ` (${item.count})` }</b>
+              </List.Item>
+            }
           }} />
       </div>
     }

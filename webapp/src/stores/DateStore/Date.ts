@@ -5,6 +5,11 @@ import UiStore from '../UiStore';
 import { observable } from 'mobx';
 import { DateCategory } from '../DateCategoryStore/DateCategory';
 
+export interface IFeedbackStat {
+  Feedback: number;
+  count: number;
+}
+
 export class DateFeedback {
   User: User;
 
@@ -56,6 +61,35 @@ export class DateModel {
         return a.User.LastName.localeCompare(a.User.LastName)
       }
     })
+  }
+
+  public get orderedFeedbacksWithHeaders(): Array<DateFeedback | IFeedbackStat> {
+    const feedbacks = this.orderedFeedbacks;
+
+    const stats: Record<number, IFeedbackStat> = {};
+    feedbacks.forEach( (fb) => {
+      if (!stats[fb.Feedback]) {
+        stats[fb.Feedback] = {
+          Feedback: fb.Feedback,
+          count: 0
+        };
+      }
+
+      stats[fb.Feedback].count ++;
+    })
+
+    let lastType = null;
+    const ret: Array<DateFeedback | IFeedbackStat> = [];
+    feedbacks.map( (fb) => {
+      if (fb.Feedback !== lastType) {
+        ret.push(stats[fb.Feedback]);
+        lastType = fb.Feedback;
+      }
+
+      ret.push(fb);
+    })
+
+    return ret;
   }
 
   public calculateFeedbacks(feedbacks: any[], users: User[]) {

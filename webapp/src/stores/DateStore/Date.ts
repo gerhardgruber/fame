@@ -58,35 +58,31 @@ export class DateModel {
       } else if ( a.Feedback > b.Feedback) {
         return 1;
       } else {
-        return a.User.LastName.localeCompare(a.User.LastName)
+        return 0;
       }
     })
   }
 
   public get orderedFeedbacksWithHeaders(): Array<DateFeedback | IFeedbackStat> {
-    const feedbacks = this.orderedFeedbacks;
-
-    const stats: Record<number, IFeedbackStat> = {};
-    feedbacks.forEach( (fb) => {
-      if (!stats[fb.Feedback]) {
-        stats[fb.Feedback] = {
-          Feedback: fb.Feedback,
-          count: 0
-        };
+    const groupedFeedbacks: Record<number,DateFeedback[]> = {};
+    this.Feedbacks.forEach( (fb) => {
+      if (!groupedFeedbacks[fb.Feedback]) {
+        groupedFeedbacks[fb.Feedback] = [];
       }
+      groupedFeedbacks[fb.Feedback].push(fb);
+    });
 
-      stats[fb.Feedback].count ++;
-    })
-
-    let lastType = null;
     const ret: Array<DateFeedback | IFeedbackStat> = [];
-    feedbacks.map( (fb) => {
-      if (fb.Feedback !== lastType) {
-        ret.push(stats[fb.Feedback]);
-        lastType = fb.Feedback;
-      }
 
-      ret.push(fb);
+    Object.keys(groupedFeedbacks).sort().forEach((type) => {
+      const fbType = Number(type)
+      const feedbacks = groupedFeedbacks[fbType].sort((a, b) => {
+        return a.User.LastName.localeCompare(b.User.LastName)
+      })
+      ret.push({
+        Feedback: fbType,
+        count: feedbacks.length
+      }, ...feedbacks);
     })
 
     return ret;

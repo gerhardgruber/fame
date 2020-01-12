@@ -37,8 +37,10 @@ export default class DateStore {
     } );
   }
 
-  public loadDates(): Promise<DateModel[]> {
-    return Api.GET( '/dates', {} ).then( ( response ) => {
+  public loadDates(loadPastDates: boolean): Promise<DateModel[]> {
+    return Api.GET( '/dates', {
+      loadPastDates
+    } ).then( ( response ) => {
       this.dates = map( response.data.data.Dates, ( o: any ) => {
         return new DateModel( o );
       } );

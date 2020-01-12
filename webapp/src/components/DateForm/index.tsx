@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {observer} from 'mobx-react';
 import UiStore from "../../stores/UiStore";
-import { Form, Input, Button, DatePicker, Select, Spin, List, Icon } from "antd";
+import { Form, Input, Button, DatePicker, Select, Spin, List, Icon, TimePicker, Row, Col } from "antd";
 import { WrappedFormUtils } from "antd/lib/form/Form";
 import FormItem from "antd/lib/form/FormItem";
 import { Link, Redirect } from 'react-router-dom';
@@ -37,6 +37,14 @@ class _DateForm extends React.Component<DateFormProps> {
       if (err) {
         return
       }
+
+      data.StartTime.year(data.StartDate.year())
+      data.StartTime.month(data.StartDate.month())
+      data.StartTime.day(data.StartDate.day())
+
+      data.EndTime.year(data.EndDate.year())
+      data.EndTime.month(data.EndDate.month())
+      data.EndTime.day(data.EndDate.day())
 
       if (this.props.date) {
         this.props.date.setData(data);
@@ -208,20 +216,60 @@ class _DateForm extends React.Component<DateFormProps> {
                         <Input disabled={!this.editable} placeholder={uiStore.T("DATE_LOCATION_PLACEHOLDER")} />
                     )}
               </FormItem>
-              <FormItem {...uiStore.formItemLayout} label={uiStore.T("DATE_START_TIME")} hasFeedback>
-                    {getFieldDecorator('StartTime', {
-                        rules: [{ required: true, message: uiStore.T("DATE_START_TIME_NOT_GIVEN") }]
-                    })(
-                        <DatePicker disabled={!this.editable} showTime={true} placeholder={uiStore.T("DATE_START_TIME_PLACEHOLDER")} />
-                    )}
-              </FormItem>
-              <FormItem {...uiStore.formItemLayout} label={uiStore.T("DATE_END_TIME")} hasFeedback>
-                    {getFieldDecorator('EndTime', {
-                        rules: [{ required: true, message: uiStore.T("DATE_END_TIME_NOT_GIVEN") }]
-                    })(
-                        <DatePicker disabled={!this.editable} showTime={true} placeholder={uiStore.T("DATE_END_TIME_PLACEHOLDER")} />
-                    )}
-              </FormItem>
+              <Row>
+                <Col xs={10}>
+                  <FormItem labelCol={{xs:12}} wrapperCol={{xs:12}} label={uiStore.T("DATE_START_TIME")} hasFeedback>
+                        {getFieldDecorator('StartDate', {
+                            rules: [{ required: true, message: uiStore.T("DATE_START_DATE_NOT_GIVEN") }]
+                        })(
+                            <DatePicker
+                              disabled={!this.editable}
+                              placeholder={uiStore.T("DATE_START_DATE_PLACEHOLDER")}
+                              />
+                        )}
+                  </FormItem>
+                </Col>
+                <Col xs={14}>
+                  <FormItem wrapperCol={{xs:24}} hasFeedback>
+                        {getFieldDecorator('StartTime', {
+                            rules: [{ required: true, message: uiStore.T("DATE_START_TIME_NOT_GIVEN") }]
+                        })(
+                            <TimePicker
+                              disabled={!this.editable}
+                              placeholder={uiStore.T("DATE_START_TIME_PLACEHOLDER")}
+                              format={"HH:mm"}
+                              />
+                        )}
+                  </FormItem>
+                </Col>
+              </Row>
+              <Row>
+                <Col xs={10}>
+                  <FormItem labelCol={{xs:12}} wrapperCol={{xs:12}} label={uiStore.T("DATE_END_TIME")} hasFeedback>
+                        {getFieldDecorator('EndDate', {
+                            rules: [{ required: true, message: uiStore.T("DATE_END_DATE_NOT_GIVEN") }]
+                        })(
+                            <DatePicker
+                              disabled={!this.editable}
+                              placeholder={uiStore.T("DATE_END_DATE_PLACEHOLDER")}
+                              />
+                        )}
+                  </FormItem>
+                </Col>
+                <Col xs={14}>
+                  <FormItem wrapperCol={{xs:24}} hasFeedback>
+                        {getFieldDecorator('EndTime', {
+                            rules: [{ required: true, message: uiStore.T("DATE_END_TIME_NOT_GIVEN") }]
+                        })(
+                            <TimePicker
+                              disabled={!this.editable}
+                              placeholder={uiStore.T("DATE_END_TIME_PLACEHOLDER")}
+                              format={"HH:mm"}
+                              />
+                        )}
+                  </FormItem>
+                </Col>
+              </Row>
               <FormItem {...uiStore.formItemLayout} label={uiStore.T("DATE_CATEGORY")} hasFeedback>
                     {getFieldDecorator('CategoryID', {})(
                         <Select disabled={!this.editable}>
@@ -254,8 +302,10 @@ const DateForm = Form.create({
       Title: Form.createFormField({value: dt.Title}),
       Description: Form.createFormField({value: dt.Description}),
       Location: Form.createFormField({value: dt.Location}),
-      StartTime: Form.createFormField({value: moment(dt.StartTime || new Date())}),
-      EndTime: Form.createFormField({value: moment(dt.EndTime || new Date())}),
+      StartDate: Form.createFormField({value: moment(dt.StartTime || new Date(), 'YYYY-MM-DD')}),
+      StartTime: Form.createFormField({value: moment(dt.StartTime || new Date(), 'HH:mm')}),
+      EndDate: Form.createFormField({value: moment(dt.EndTime || new Date(), 'YYYY-MM-DD')}),
+      EndTime: Form.createFormField({value: moment(dt.EndTime || new Date(), 'HH:mm')}),
       CategoryID: Form.createFormField({value: dt.CategoryID || fallbackID})
     }
   }

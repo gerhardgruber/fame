@@ -14,7 +14,7 @@ import (
 )
 
 func getDates(r *http.Request, params map[string]string, db *gorm.DB, sess *models.Session, c *lib.Config) *reply {
-	dates, serr := services.GetDates(db, true)
+	dates, serr := services.GetDates(db, r.FormValue("loadPastDates") == "true")
 	if serr != nil {
 		return Error(*serr)
 	}

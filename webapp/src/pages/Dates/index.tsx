@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
-import { Table, Button } from 'antd'
+import { Table, Button, Switch } from 'antd'
 import Page from '../../components/Page';
 import UiStore from '../../stores/UiStore';
 import DateStore from '../../stores/DateStore';
@@ -15,7 +15,8 @@ const uiStore = UiStore.getInstance( );
 @observer
 export default class Dates extends Page {
   state = {
-    navigateTo: null
+    navigateTo: null,
+    showPastDates: false
   };
 
   columns: Table<DateModel>['props']['columns'] = [ {
@@ -36,7 +37,13 @@ export default class Dates extends Page {
   } ];
 
   componentDidMount( ) {
-    dateStore.loadDates();
+    this.loadDates();
+  }
+
+  loadDates() {
+    dateStore.loadDates(
+      this.state.showPastDates
+    );
   }
 
   pageTitle(): string {
@@ -61,6 +68,17 @@ export default class Dates extends Page {
 
   renderContent(): JSX.Element {
     return <div>
+             <div style={{marginBottom: '1rem'}}>
+               <Switch
+                 checked={this.state.showPastDates}
+                 onChange={(value) => {
+                   this.setState({showPastDates: value}, () => this.loadDates())
+                 }}
+                 />
+               <span style={{marginLeft: '0.5rem'}}>
+                 {uiStore.T('SHOW_PAST_DATES')}
+               </span>
+             </div>
              <Table
                columns={this.columns}
                dataSource={dateStore.dates}

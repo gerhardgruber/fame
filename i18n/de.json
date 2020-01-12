@@ -90,6 +90,7 @@
   "RIGHT_TYPE_STANDARD": "Standard-Benutzer",
   "RIGHT_TYPE_ADMIN": "Administrator",
   "SAVE": "Speichern",
+  "SHOW_PAST_DATES": "Vergangene Termine anzeigen",
   "TIME_FORMAT": "HH:mm",
   "USER_NAME": "Name",
   "USER_NAME_NOT_GIVEN": "Bitte geben Sie einen Benutzernamen an",

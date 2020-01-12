@@ -3,6 +3,7 @@ import { Form, Input, Button } from 'antd';
 import UiStore from '../../stores/UiStore';
 import { FormComponentProps } from 'antd/lib/form';
 import User from '../../stores/User';
+import { ButtonProps } from 'antd/lib/button';
 
 const FormItem = Form.Item;
 
@@ -34,6 +35,10 @@ class _Login extends React.Component<FormComponentProps> {
         });
     }
 
+    _forgotPassword: ButtonProps["onClick"] = (e) => {
+        e.preventDefault();
+    }
+
     render() {
         const { getFieldDecorator } = this.props.form;
 
@@ -62,6 +67,11 @@ class _Login extends React.Component<FormComponentProps> {
                         {uiStore.T("LOGIN_LOGIN_BUTTON")}
                     </Button>
                 </FormItem>
+                {/*<FormItem {...tailFormItemLayout}>
+                    <Button onClick={this._forgotPassword}>
+                        {uiStore.T("FORGOT_PASSWORD_BUTTON")}
+                    </Button>
+                    </FormItem>*/}
             </Form>
         );
     }

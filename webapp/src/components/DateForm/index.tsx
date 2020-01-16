@@ -40,11 +40,11 @@ class _DateForm extends React.Component<DateFormProps> {
 
       data.StartTime.year(data.StartDate.year())
       data.StartTime.month(data.StartDate.month())
-      data.StartTime.day(data.StartDate.day())
+      data.StartTime.date(data.StartDate.date())
 
       data.EndTime.year(data.EndDate.year())
       data.EndTime.month(data.EndDate.month())
-      data.EndTime.day(data.EndDate.day())
+      data.EndTime.date(data.EndDate.date())
 
       if (this.props.date) {
         this.props.date.setData(data);

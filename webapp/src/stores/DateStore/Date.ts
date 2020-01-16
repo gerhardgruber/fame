@@ -4,6 +4,7 @@ import { Address } from '../Address';
 import UiStore from '../UiStore';
 import { observable } from 'mobx';
 import { DateCategory } from '../DateCategoryStore/DateCategory';
+import find from 'lodash/find';
 
 export interface IFeedbackStat {
   Feedback: number;
@@ -45,6 +46,8 @@ export class DateModel {
   public EndTime: Date;
 
   @observable public Feedbacks: DateFeedback[];
+
+  private dateFeedbacks: any;
 
   constructor( data ) {
     this.setData(data);
@@ -88,6 +91,14 @@ export class DateModel {
     return ret;
   }
 
+  public getMyFeedback(): DateFeedback {
+    const uiStore = UiStore.getInstance();
+
+    return find(this.dateFeedbacks, (fb) => {
+      return fb.UserID === uiStore.currentUser.ID;
+    });
+  }
+
   public calculateFeedbacks(feedbacks: any[], users: User[]) {
     const uiStore = UiStore.getInstance();
 
@@ -127,6 +138,11 @@ export class DateModel {
     this.CategoryID = data.CategoryID;
     if (data.Category) {
       this.Category = new DateCategory(data.Category);
+    }
+    if (data.DateFeedbacks) {
+      this.dateFeedbacks = data.DateFeedbacks;
+    } else {
+      this.dateFeedbacks = [];
     }
 
     return this;

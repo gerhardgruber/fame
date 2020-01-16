@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
-import { Table, Button, Switch } from 'antd'
+import { Table, Button, Switch, Icon } from 'antd'
 import Page from '../../components/Page';
 import UiStore from '../../stores/UiStore';
 import DateStore from '../../stores/DateStore';
@@ -20,6 +20,20 @@ export default class Dates extends Page {
   };
 
   columns: Table<DateModel>['props']['columns'] = [ {
+    title: uiStore.T( 'DATES_STATUS' ),
+    dataIndex: 'ID',
+    width: '8%',
+    render: (id: number, dt: DateModel) => {
+      const myFeedback = dt.getMyFeedback();
+      if (myFeedback && myFeedback.Feedback === uiStore.dateFeedbackTypes["Yes"]) {
+        return <Icon style={{color: 'green'}} type="check-circle" />;
+      } else if (myFeedback && myFeedback.Feedback === uiStore.dateFeedbackTypes["No"]) {
+        return <Icon style={{color: 'red'}} type="close-circle" />;
+      } else {
+        return <Icon style={{color: 'orange'}} type="warning" />;
+      }
+    }
+  }, {
     title: uiStore.T( 'DATES_TITLE' ),
     dataIndex: 'Title',
   }, {

@@ -104,6 +104,8 @@ class UiStore {
     }
 
     public logout() : Promise<any> {
+        this.loggedIn = false;
+
         return Api.POST( '/authentication/logout', {} ).then( ( response ) => {
             window.sessionStorage.removeItem( "session" );
             this.loadStatics();

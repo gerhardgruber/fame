@@ -38,6 +38,10 @@ export default class DateStore {
   }
 
   public loadDates(loadPastDates: boolean): Promise<DateModel[]> {
+    if (!UiStore.getInstance().loggedIn) {
+      return Promise.resolve([]);
+    }
+
     return Api.GET( '/dates', {
       loadPastDates
     } ).then( ( response ) => {

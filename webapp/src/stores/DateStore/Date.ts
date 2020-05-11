@@ -113,8 +113,11 @@ export class DateModel {
     });
 
     feedbacks.forEach( (f) => {
-      _feedbacks[f.UserID].Feedback = f.Feedback;
-      _feedbacks[f.UserID].UpdatedAt = new Date(f.UpdatedAt);
+      /* We have to check if _feedbacks[f.UserID] exists, because if a user was deleted, it will not exist */
+      if (_feedbacks[f.UserID]) {
+        _feedbacks[f.UserID].Feedback = f.Feedback;
+        _feedbacks[f.UserID].UpdatedAt = new Date(f.UpdatedAt);
+      }
     });
 
     this.Feedbacks = map(_feedbacks);

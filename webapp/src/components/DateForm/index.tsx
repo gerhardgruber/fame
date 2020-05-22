@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {observer} from 'mobx-react';
 import UiStore from "../../stores/UiStore";
-import { Form, Input, Button, DatePicker, Select, Spin, List, Icon, TimePicker, Row, Col } from "antd";
+import { Form, Input, Button, DatePicker, Select, Spin, List, Icon, TimePicker, Row, Col, Switch } from "antd";
 import { WrappedFormUtils } from "antd/lib/form/Form";
 import FormItem from "antd/lib/form/FormItem";
 import { Link, Redirect } from 'react-router-dom';
@@ -100,10 +100,10 @@ class _DateForm extends React.Component<DateFormProps> {
     }
 
     return <ButtonGroup style={{marginLeft: '1rem'}}>
-      <Button onClick={() => this.feedbackYesClicked(item)} style={{backgroundColor: item.Feedback === uiStore.dateFeedbackTypes.Yes ? '#76FF03' : '#CCFF90', color: 'black'}}>
+      <Button disabled={this.props.date.Closed} onClick={() => this.feedbackYesClicked(item)} style={{backgroundColor: item.Feedback === uiStore.dateFeedbackTypes.Yes ? '#76FF03' : '#CCFF90', color: 'black'}}>
         {uiStore.T( 'DATE_YES' )}
       </Button>
-      <Button onClick={() => this.feedbackNoClicked(item)} style={{backgroundColor: item.Feedback === uiStore.dateFeedbackTypes.No ? '#FF1744' : '#FF8A80', color: 'black'}}>
+      <Button disabled={this.props.date.Closed} onClick={() => this.feedbackNoClicked(item)} style={{backgroundColor: item.Feedback === uiStore.dateFeedbackTypes.No ? '#FF1744' : '#FF8A80', color: 'black'}}>
         {uiStore.T( 'DATE_NO' )}
       </Button>
     </ButtonGroup>
@@ -277,6 +277,11 @@ class _DateForm extends React.Component<DateFormProps> {
                         </Select>
                     )}
               </FormItem>
+              <FormItem {...uiStore.formItemLayout} label={uiStore.T("DATE_CLOSED")}>
+                    {getFieldDecorator('Closed', {valuePropName: 'checked'})(
+                        <Switch disabled={!this.editable} />
+                    )}
+              </FormItem>
 
               {this.renderFeedbacks()}
 
@@ -306,7 +311,8 @@ const DateForm = Form.create({
       StartTime: Form.createFormField({value: moment(dt.StartTime || new Date(), 'HH:mm')}),
       EndDate: Form.createFormField({value: moment(dt.EndTime || new Date(), 'YYYY-MM-DD')}),
       EndTime: Form.createFormField({value: moment(dt.EndTime || new Date(), 'HH:mm')}),
-      CategoryID: Form.createFormField({value: dt.CategoryID || fallbackID})
+      CategoryID: Form.createFormField({value: dt.CategoryID || fallbackID}),
+      Closed: Form.createFormField({value: dt.Closed})
     }
   }
 })(_DateForm);

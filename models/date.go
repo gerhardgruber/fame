@@ -37,6 +37,8 @@ type Date struct {
 
 	CategoryID uint64
 	Category   *DateCategory
+
+	Closed bool
 }
 
 // ColumnPrefix implements the gorm columnPrefixer interface

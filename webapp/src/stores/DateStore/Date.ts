@@ -45,6 +45,8 @@ export class DateModel {
   public StartTime: Date;
   public EndTime: Date;
 
+  public Closed: boolean;
+
   @observable public Feedbacks: DateFeedback[];
 
   private dateFeedbacks: any;
@@ -148,6 +150,8 @@ export class DateModel {
       this.dateFeedbacks = [];
     }
 
+    this.Closed = data.Closed;
+
     return this;
   }
 
@@ -158,7 +162,8 @@ export class DateModel {
       StartTime: this.StartTime,
       EndTime: this.EndTime,
       Location: this.Location,
-      CategoryID: this.CategoryID
+      CategoryID: this.CategoryID,
+      Closed: this.Closed
     };
   }
 }

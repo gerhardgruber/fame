@@ -16,6 +16,7 @@ type CreateUpdateDateParams struct {
 	StartTime   time.Time
 	EndTime     time.Time
 	CategoryID  uint64
+	Closed      bool
 }
 
 // GetDates loads all dates
@@ -52,6 +53,7 @@ func CreateDate(c *lib.Config, db *gorm.DB, u *models.User, p *CreateUpdateDateP
 		LocationID:  &adr.ID,
 		CategoryID:  p.CategoryID,
 		CreatedByID: u.ID,
+		Closed:      p.Closed,
 	}
 
 	if err := db.Create(date).Error; err != nil {
@@ -80,6 +82,7 @@ func UpdateDate(c *lib.Config, db *gorm.DB, id uint64, p *CreateUpdateDateParams
 	date.EndTime = p.EndTime
 	date.LocationID = &adr.ID
 	date.CategoryID = p.CategoryID
+	date.Closed = p.Closed
 
 	if err := db.Save(date).Error; err != nil {
 		return nil, lib.DataCorruptionError(

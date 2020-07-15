@@ -9,7 +9,7 @@ import (
 	"github.com/gerhardgruber/fame/lib"
 	"github.com/gerhardgruber/fame/models"
 	"github.com/jinzhu/gorm"
-	"github.com/kellydunn/golang-geo"
+	geo "github.com/kellydunn/golang-geo"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -66,45 +66,57 @@ func LookupAddress(address string, c *lib.Config) (*models.Address, *lib.FameErr
 func GetOrCreateAddress(address string, db *gorm.DB, c *lib.Config) (*models.Address, *lib.FameError) {
 	geoCode, err := Geocode(address, c)
 	if err != nil {
-		return nil, &lib.FameError{
-			ErrorCode: "GeocodeError",
-			Caption:   "ERR_GEOCODE",
-			CaptionData: map[string]interface{}{
-				"address": address,
-			},
-			ErrorMessage: fmt.Sprintf("Error geocoding address %s: %s", address, err.Error()),
-			StackTrace:   debug.Stack(),
+		log.Errorf("Error looking for address %s! %s", address, err)
+	}
+
+	var newA *models.Address
+	if geoCode != nil {
+		newA, err := geoCode.getAddress(0)
+		if err != nil {
+			return nil, &lib.FameError{
+				ErrorCode: "GeocodeError",
+				Caption:   "ERR_GEOCODE",
+				CaptionData: map[string]interface{}{
+					"address": address,
+				},
+				ErrorMessage: fmt.Sprintf("Error fetching address %s from geocode %+v: %s", address, geoCode, err.Error()),
+				StackTrace:   debug.Stack(),
+			}
 		}
-	}
 
-	newA, err := geoCode.getAddress(0)
-	if err != nil {
-		return nil, &lib.FameError{
-			ErrorCode: "GeocodeError",
-			Caption:   "ERR_GEOCODE",
-			CaptionData: map[string]interface{}{
-				"address": address,
-			},
-			ErrorMessage: fmt.Sprintf("Error fetching address %s from geocode %+v: %s", address, geoCode, err.Error()),
-			StackTrace:   debug.Stack(),
+		oldA := &models.Address{}
+		err = db.Where(db.L(models.AddressT, "Street").Eq(newA.Street).
+			And(db.L(models.AddressT, "Number").Eq(newA.Number)).
+			And(db.L(models.AddressT, "Postcode").Eq(newA.Postcode)).
+			And(db.L(models.AddressT, "City").Eq(newA.City)).
+			And(db.L(models.AddressT, "Country").Eq(newA.Country))).
+			First(oldA).Error
+		if err == nil {
+			return oldA, nil
 		}
-	}
 
-	oldA := &models.Address{}
-	err = db.Where(db.L(models.AddressT, "Street").Eq(newA.Street).
-		And(db.L(models.AddressT, "Number").Eq(newA.Number)).
-		And(db.L(models.AddressT, "Postcode").Eq(newA.Postcode)).
-		And(db.L(models.AddressT, "City").Eq(newA.City)).
-		And(db.L(models.AddressT, "Country").Eq(newA.Country))).
-		First(oldA).Error
-	if err == nil {
-		return oldA, nil
-	}
+		if !gorm.IsRecordNotFoundError(err) {
+			return nil, lib.ObjectNotFoundError(
+				fmt.Errorf("Could not find matching address: %s", err),
+			)
+		}
+	} else {
+		oldA := &models.Address{}
+		err = db.Where(db.L(models.AddressT, "Street").Eq(address)).
+			First(oldA).Error
+		if err == nil {
+			return oldA, nil
+		}
 
-	if !gorm.IsRecordNotFoundError(err) {
-		return nil, lib.ObjectNotFoundError(
-			fmt.Errorf("Could not find matching address: %s", err),
-		)
+		if !gorm.IsRecordNotFoundError(err) {
+			return nil, lib.ObjectNotFoundError(
+				fmt.Errorf("Could not find matching address: %s", err),
+			)
+		}
+
+		newA = &models.Address{
+			Street: address,
+		}
 	}
 
 	err = db.Create(newA).Error

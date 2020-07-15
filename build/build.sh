@@ -75,7 +75,7 @@ echo Server build finished
 echo "Starting webapp build..."
 
 echo "Installing dependencies..."
-npm install
+npm ci
 export STATUS=$?
 if [ $STATUS -gt 0 ] ; then
     echo Error while installing dependencies: $STATUS

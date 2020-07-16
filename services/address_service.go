@@ -71,7 +71,7 @@ func GetOrCreateAddress(address string, db *gorm.DB, c *lib.Config) (*models.Add
 
 	var newA *models.Address
 	if geoCode != nil {
-		newA, err := geoCode.getAddress(0)
+		newA, err = geoCode.getAddress(0)
 		if err != nil {
 			return nil, &lib.FameError{
 				ErrorCode: "GeocodeError",

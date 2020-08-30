@@ -96,7 +96,12 @@ func UpdateDate(c *lib.Config, db *gorm.DB, id uint64, p *CreateUpdateDateParams
 // GetDateByID loads a date with the given ID
 func GetDateByID(db *gorm.DB, id uint64) (date *models.Date, ferr *lib.FameError) {
 	date = &models.Date{}
-	if err := db.Preload("Category").Preload("Location").Preload("CreatedBy").Preload("DateFeedbacks").First(date, id).Error; err != nil {
+	if err := db.Preload("Category").
+		Preload("Location").
+		Preload("CreatedBy").
+		Preload("DateFeedbacks").
+		Preload("DateLogs").
+		First(date, id).Error; err != nil {
 		return nil, lib.DataCorruptionError(
 			fmt.Errorf("Could not get date %d: %s", id, err),
 		)

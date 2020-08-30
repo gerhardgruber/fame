@@ -98,6 +98,7 @@ func (s *server) run() {
 	controllers.RegisterAuthenticationControllerRoutes(webappRouter, config)
 	controllers.RegisterDateCategoriesControllerRoutes(webappRouter, config)
 	controllers.RegisterDatesControllerRoutes(webappRouter, config)
+	controllers.RegisterDateLogsControllerRoutes(webappRouter, config)
 	controllers.RegisterMobilePhonesControllerRoutes(webappRouter, config)
 	controllers.RegisterOperationsControllerRoutes(webappRouter, config)
 	controllers.RegisterPositionControllerRoutes(webappRouter, config)

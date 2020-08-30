@@ -80,3 +80,13 @@ func WorkflowError(e error) *FameError {
 		StackTrace:   debug.Stack(),
 	}
 }
+
+func AuthenticationError(e error) *FameError {
+	return &FameError{
+		ErrorCode:    "AuthenticationError",
+		ErrorMessage: e.Error(),
+		Caption:      "ERR_AUTHENTICATION",
+		CaptionData:  nil,
+		StackTrace:   debug.Stack(),
+	}
+}

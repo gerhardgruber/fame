@@ -5,6 +5,7 @@ import UiStore from '../UiStore';
 import { observable } from 'mobx';
 import { DateCategory } from '../DateCategoryStore/DateCategory';
 import find from 'lodash/find';
+import { DateLog } from '../DateLog';
 
 export interface IFeedbackStat {
   Feedback: number;
@@ -50,6 +51,9 @@ export class DateModel {
   @observable public Feedbacks: DateFeedback[];
 
   private dateFeedbacks: any;
+
+  public DateLogs: DateLog[];
+  public DateLogsByUserID: Record<number, DateLog>;
 
   constructor( data ) {
     this.setData(data);
@@ -152,6 +156,20 @@ export class DateModel {
 
     this.Closed = data.Closed;
 
+    if (data.DateLogs) {
+      this.DateLogsByUserID = {};
+      this.DateLogs = map( data.DateLogs, ( dl ) => {
+        const dateLog = new DateLog( dl )
+
+        this.DateLogsByUserID[ dateLog.UserID ] = dateLog;
+
+        return dateLog;
+      } );
+    } else {
+      this.DateLogs = [];
+      this.DateLogsByUserID = {};
+    }
+
     return this;
   }
 
@@ -165,5 +183,16 @@ export class DateModel {
       CategoryID: this.CategoryID,
       Closed: this.Closed
     };
+  }
+
+  public saveDateLog( dateLog: DateLog ) {
+    if ( !dateLog.ID ) {
+      this.DateLogsByUserID[ dateLog.UserID ] = dateLog;
+      this.DateLogs.push( dateLog );
+      dateLog.create();
+
+    } else {
+      dateLog.save();
+    }
   }
 }

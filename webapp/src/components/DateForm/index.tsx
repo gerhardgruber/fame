@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {observer} from 'mobx-react';
 import UiStore from "../../stores/UiStore";
-import { Form, Input, Button, DatePicker, Select, Spin, List, Icon, TimePicker, Row, Col, Switch } from "antd";
+import { Form, Input, Button, DatePicker, Select, Spin, List, Icon, TimePicker, Row, Col, Switch, Modal } from "antd";
 import { WrappedFormUtils } from "antd/lib/form/Form";
 import FormItem from "antd/lib/form/FormItem";
 import { Link, Redirect } from 'react-router-dom';
@@ -13,7 +13,8 @@ import ButtonGroup from 'antd/lib/button/button-group';
 import { ButtonProps } from 'antd/lib/button';
 import DateCategoryStore from '../../stores/DateCategoryStore';
 import { computed } from 'mobx';
-import { RightType } from '../../stores/User';
+import User, { RightType } from '../../stores/User';
+import { DateLog } from '../../stores/DateLog';
 
 interface DateFormProps {
   date?: DateModel;
@@ -24,10 +25,16 @@ const uiStore = UiStore.getInstance();
 const dateStore = DateStore.getInstance();
 const dateCategoryStore = DateCategoryStore.getInstance();
 
+interface IDateFormState {
+  gotoDates: boolean;
+  currentDateLog: DateLog | null;
+}
+
 @observer
-class _DateForm extends React.Component<DateFormProps> {
+class _DateForm extends React.Component<DateFormProps, IDateFormState> {
   state = {
-    gotoDates: false
+    gotoDates: false,
+    currentDateLog: null
   };
 
   save = (e) => {
@@ -99,7 +106,7 @@ class _DateForm extends React.Component<DateFormProps> {
       return null;
     }
 
-    return <ButtonGroup style={{marginLeft: '1rem'}}>
+    return <ButtonGroup>
       <Button disabled={this.props.date.Closed} onClick={() => this.feedbackYesClicked(item)} style={{backgroundColor: item.Feedback === uiStore.dateFeedbackTypes.Yes ? '#76FF03' : '#CCFF90', color: 'black'}}>
         {uiStore.T( 'DATE_YES' )}
       </Button>
@@ -108,6 +115,113 @@ class _DateForm extends React.Component<DateFormProps> {
       </Button>
     </ButtonGroup>
   };
+
+  renderDateLogButton = (userID: number, present:  boolean): JSX.Element => {
+    if (!this.props.date || uiStore.currentUser.RightType !== RightType.ADMIN || this.props.date.EndTime > new Date()) {
+      return null;
+    }
+
+    return <Button onClick={() => {
+      this.setState( {
+        currentDateLog: this.props.date.DateLogsByUserID[ userID ] || new DateLog( {
+          UserID: userID,
+          DateID: this.props.date.ID,
+          Present: present,
+          FromTime: this.props.date.StartTime,
+          UntilTime: this.props.date.EndTime
+        } ) } )
+      } }>
+      {uiStore.T( "DATE_LOG" )}
+    </Button>
+  }
+
+  onDateLogCancel = () => {
+    this.setState({
+      currentDateLog: null
+    })
+  }
+
+  onDateLogOk = () => {
+    this.props.date.saveDateLog(this.state.currentDateLog);
+    this.setState({
+      currentDateLog: null
+    })
+  }
+
+  renderDateLogModal(): JSX.Element {
+    if ( !this.state.currentDateLog ) {
+      return null;
+    }
+
+    const dateLog: DateLog = this.state.currentDateLog;
+
+    return <Modal
+      title={uiStore.T( "DATE_LOG" )}
+      visible={true}
+      onCancel={() => this.onDateLogCancel()}
+      onOk={() => this.onDateLogOk()}
+      width={700}
+      >
+      <Row gutter={5}>
+        <Col md={12}>{uiStore.T( "DATE_LOG_PRESENT" )}</Col>
+        <Col md={12}>
+          <Switch checked={dateLog.Present} onChange={(checked) => dateLog.Present = checked} />
+        </Col>
+      </Row>
+      <Row gutter={5}>
+        <Col md={12}>{uiStore.T( "DATE_LOG_FROM_TIME" )}</Col>
+        <Col md={6}>
+          <DatePicker
+            value={moment(dateLog.FromTime || new Date(), 'YYYY-MM-DD')}
+            onChange={(dt) => {
+              const nd = new Date(dateLog.FromTime);
+              nd.setFullYear(dt.year(), dt.month(), dt.date())
+              dateLog.FromTime = nd;
+            }}
+            />
+        </Col>
+        <Col md={6}>
+          <TimePicker
+            value={moment(dateLog.FromTime || new Date(), 'HH:mm')}
+            onChange={(dt) => {
+              const nd = new Date(dateLog.FromTime);
+              nd.setHours(dt.hour(), dt.minute(), dt.second())
+              dateLog.FromTime = nd;
+            }}
+            />
+        </Col>
+      </Row>
+      <Row gutter={5}>
+        <Col md={12}>{uiStore.T( "DATE_LOG_UNTIL_TIME" )}</Col>
+        <Col md={6}>
+          <DatePicker
+            value={moment(dateLog.UntilTime || new Date(), 'YYYY-MM-DD')}
+            onChange={(dt) => {
+              const nd = new Date(dateLog.UntilTime);
+              nd.setFullYear(dt.year(), dt.month(), dt.date())
+              dateLog.UntilTime = nd;
+            }}
+            />
+        </Col>
+        <Col md={6}>
+          <TimePicker
+            value={moment(dateLog.UntilTime || new Date(), 'HH:mm')}
+            onChange={(dt) => {
+              const nd = new Date(dateLog.UntilTime);
+              nd.setHours(dt.hour(), dt.minute(), dt.second())
+              dateLog.UntilTime = nd;
+            }}
+            />
+        </Col>
+      </Row>
+      <Row gutter={5}>
+        <Col md={24}>{uiStore.T( "DATE_LOG_COMMENT" )}</Col>
+        <Col md={24}>
+          <TextArea value={dateLog.Comment} onChange={(event) => dateLog.Comment = event.target.value} />
+        </Col>
+      </Row>
+    </Modal>
+  }
 
   renderFeedbackIcon(feedback: number) {
     if (feedback === uiStore.dateFeedbackTypes["Yes"]) {
@@ -133,7 +247,10 @@ class _DateForm extends React.Component<DateFormProps> {
                   {this.renderFeedbackIcon(item.Feedback)}
                 </span>
                 {item.User.FirstName} {item.User.LastName}
-                {this.renderAnswerButton(item)}
+                <span style={{marginLeft: '1rem'}}>
+                  {this.renderAnswerButton(item)}
+                  {this.renderDateLogButton(item.User.ID, item.Feedback === uiStore.dateFeedbackTypes["Yes"])}
+                </span>
               </List.Item>
             } else {
               return <List.Item>
@@ -286,6 +403,7 @@ class _DateForm extends React.Component<DateFormProps> {
               {this.renderFeedbacks()}
 
               {this.renderButtons()}
+              {this.renderDateLogModal()}
               {gotoDates}
             </Form>
   }

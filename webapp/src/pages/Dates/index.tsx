@@ -16,7 +16,7 @@ const uiStore = UiStore.getInstance( );
 export default class Dates extends Page {
   state = {
     navigateTo: null,
-    showPastDates: false
+    showPastDates: sessionStorage.getItem( "fame.showPastDates" ) === "true"
   };
 
   columns: Table<DateModel>['props']['columns'] = [ {
@@ -86,6 +86,7 @@ export default class Dates extends Page {
                <Switch
                  checked={this.state.showPastDates}
                  onChange={(value) => {
+                   sessionStorage.setItem( "fame.showPastDates", value + "" );
                    this.setState({showPastDates: value}, () => this.loadDates())
                  }}
                  />

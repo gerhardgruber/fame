@@ -39,7 +39,7 @@ func authenticationLogin(w http.ResponseWriter, r *http.Request, c *lib.Config) 
 
 	if err != nil {
 		log.Error("Error logging in!", err)
-		replyError(w, "AuthenticationError")
+		replyFameError(w, *lib.AuthenticationError(err))
 		return
 	}
 

@@ -56,7 +56,7 @@ class _DateForm extends React.Component<DateFormProps, IDateFormState> {
       if (this.props.date) {
         this.props.date.setData(data);
         dateStore.saveDate(this.props.date).then( () => {
-          dateStore.loadDates(false).then( () => {
+          dateStore.loadDates(false, "").then( () => {
             this.setState({
               gotoDates: true
             });
@@ -64,7 +64,7 @@ class _DateForm extends React.Component<DateFormProps, IDateFormState> {
         });
       } else {
         dateStore.createDate(new DateModel(data)).then( () => {
-          dateStore.loadDates(false).then( () => {
+          dateStore.loadDates(false, "").then( () => {
             this.setState({
               gotoDates: true
             });
@@ -77,7 +77,7 @@ class _DateForm extends React.Component<DateFormProps, IDateFormState> {
   deleteDate = (e) => {
     e.preventDefault();
     dateStore.deleteDate(this.props.date).then( () => {
-      dateStore.loadDates(false).then( () => {
+      dateStore.loadDates(false, "").then( () => {
         this.setState({
           gotoDates: true
         });

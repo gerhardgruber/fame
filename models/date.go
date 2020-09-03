@@ -30,6 +30,8 @@ type Date struct {
 	LocationID *uint64
 	Location   *Address
 
+	LocationStr string
+
 	DateFeedbacks []DateFeedback
 
 	StartTime time.Time

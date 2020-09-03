@@ -116,6 +116,16 @@ class _DateForm extends React.Component<DateFormProps, IDateFormState> {
     </ButtonGroup>
   };
 
+  getDateLogIcon( dateLog?: DateLog ) {
+    if ( !dateLog ) {
+      return "warning";
+    } else if ( dateLog.Present ) {
+      return "check";
+    } else {
+      return "close";
+    }
+  }
+
   renderDateLogButton = (userID: number, present:  boolean): JSX.Element => {
     if (!this.props.date || uiStore.currentUser.RightType !== RightType.ADMIN || this.props.date.EndTime > new Date()) {
       return null;
@@ -130,7 +140,7 @@ class _DateForm extends React.Component<DateFormProps, IDateFormState> {
           FromTime: this.props.date.StartTime,
           UntilTime: this.props.date.EndTime
         } ) } )
-      } }>
+      } } icon={this.getDateLogIcon( this.props.date.DateLogsByUserID[ userID ] )}>
       {uiStore.T( "DATE_LOG" )}
     </Button>
   }
@@ -188,6 +198,7 @@ class _DateForm extends React.Component<DateFormProps, IDateFormState> {
               nd.setHours(dt.hour(), dt.minute(), dt.second())
               dateLog.FromTime = nd;
             }}
+            format={"HH:mm"}
             />
         </Col>
       </Row>
@@ -211,6 +222,7 @@ class _DateForm extends React.Component<DateFormProps, IDateFormState> {
               nd.setHours(dt.hour(), dt.minute(), dt.second())
               dateLog.UntilTime = nd;
             }}
+            format={"HH:mm"}
             />
         </Col>
       </Row>

@@ -2,6 +2,7 @@ package services
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/gerhardgruber/fame/lib"
@@ -20,13 +21,25 @@ type CreateUpdateDateParams struct {
 }
 
 // GetDates loads all dates
-func GetDates(db *gorm.DB, loadPastDates bool) (dates *[]models.Date, serr *lib.FameError) {
+func GetDates(db *gorm.DB, loadPastDates bool, search string) (dates *[]models.Date, serr *lib.FameError) {
 	dates = &[]models.Date{}
 
 	q := db.Order(db.L(models.DateT, "StartTime").OrderAsc())
 	if !loadPastDates {
 		q = q.Where(
 			db.L(models.DateT, "EndTime").Gt(time.Now()),
+		)
+	}
+
+	search = strings.TrimSpace(search)
+	if search != "" {
+		search = "%" + search + "%"
+		q = q.Where(
+			db.L(models.DateT, "Title").Like(search).Or(
+				db.L(models.DateT, "Description").Like(search).Or(
+					db.L(models.DateT, "LocationStr").Like(search),
+				),
+			),
 		)
 	}
 
@@ -51,6 +64,7 @@ func CreateDate(c *lib.Config, db *gorm.DB, u *models.User, p *CreateUpdateDateP
 		StartTime:   p.StartTime,
 		EndTime:     p.EndTime,
 		LocationID:  &adr.ID,
+		LocationStr: p.Location,
 		CategoryID:  p.CategoryID,
 		CreatedByID: u.ID,
 		Closed:      p.Closed,
@@ -81,6 +95,7 @@ func UpdateDate(c *lib.Config, db *gorm.DB, id uint64, p *CreateUpdateDateParams
 	date.StartTime = p.StartTime
 	date.EndTime = p.EndTime
 	date.LocationID = &adr.ID
+	date.LocationStr = p.Location
 	date.CategoryID = p.CategoryID
 	date.Closed = p.Closed
 

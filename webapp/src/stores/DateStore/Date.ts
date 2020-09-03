@@ -35,7 +35,6 @@ export class DateModel {
 
   public Description : string;
 
-  public LocationAddress: Address;
   public Location : string;
 
   public CreatedBy: User;
@@ -139,9 +138,10 @@ export class DateModel {
     this.EndTime = new Date(data.EndTime);
     if (typeof data.Location === "string") {
       this.Location = data.Location
+    } else if (typeof data.LocationStr === "string") {
+      this.Location = data.LocationStr
     } else if (!isNil(data.Location)) {
-      this.LocationAddress = new Address(data.Location);
-      this.Location = this.LocationAddress.toString();
+      this.Location = new Address(data.Location).toString();
     }
     this.CreatedBy = data.CreatedBy;
     this.CategoryID = data.CategoryID;

@@ -37,13 +37,14 @@ export default class DateStore {
     } );
   }
 
-  public loadDates(loadPastDates: boolean): Promise<DateModel[]> {
+  public loadDates(loadPastDates: boolean, search: string): Promise<DateModel[]> {
     if (!UiStore.getInstance().loggedIn) {
       return Promise.resolve([]);
     }
 
     return Api.GET( '/dates', {
-      loadPastDates
+      loadPastDates,
+      search
     } ).then( ( response ) => {
       this.dates = map( response.data.data.Dates, ( o: any ) => {
         return new DateModel( o );

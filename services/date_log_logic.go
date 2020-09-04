@@ -34,6 +34,15 @@ func GetDateLogs(db *gorm.DB, dateID uint64) ([]*models.DateLog, *lib.FameError)
 }
 
 func CreateDateLog(c *lib.Config, db *gorm.DB, p *CreateUpdateDateLogParams) (*models.DateLog, *lib.FameError) {
+	err := db.Model(models.DateLogT).Where(
+		db.L(models.DateLogT, "DateID").Eq(p.DateID),
+	).Where(
+		db.L(models.DateLogT, "UserID").Eq(p.UserID),
+	).Delete(models.DateLogT).Error
+	if err != nil {
+		return nil, lib.DataCorruptionError(fmt.Errorf("Error deleting old date log records! %w", err))
+	}
+
 	dateLog := &models.DateLog{
 		DateID:    p.DateID,
 		UserID:    p.UserID,

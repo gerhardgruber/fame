@@ -38,14 +38,14 @@ func Attendance(db *gorm.DB, fromDate string, toDate string) ([]uint8, *lib.Fame
 		return nil, lib.InternalError(fmt.Errorf("Error adding sheet to excel file! %w", err))
 	}
 
-	stat := map[uint64]userStat{}
+	stat := map[uint64]*userStat{}
 	users := []*models.User{}
 	err = db.Model(models.UserT).Find(&users).Error
 	if err != nil {
 		return nil, lib.DataCorruptionError(fmt.Errorf("Error fetching users from database! %w", err))
 	}
 	for _, u := range users {
-		stat[u.ID] = userStat{
+		stat[u.ID] = &userStat{
 			user:    u,
 			present: 0,
 			partial: 0,

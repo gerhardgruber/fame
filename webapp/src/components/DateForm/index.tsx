@@ -160,6 +160,7 @@ class _DateForm extends React.Component<DateFormProps, IDateFormState> {
           UntilTime: this.props.date.EndTime
         } )
       );
+      this.forceUpdate();
     }} icon="enter">
       {uiStore.T( "DATE_TAKE_LOG" )}
     </Button>
@@ -282,6 +283,7 @@ class _DateForm extends React.Component<DateFormProps, IDateFormState> {
                 <span style={{marginLeft: '1rem'}}>
                   {this.renderAnswerButton(item)}
                   {this.renderDateLogButton(item.User.ID, item.Feedback === uiStore.dateFeedbackTypes["Yes"])}
+                  {this.renderTakeOverDateLogButton(item.User.ID, item.Feedback === uiStore.dateFeedbackTypes["Yes"])}
                 </span>
               </List.Item>
             } else {

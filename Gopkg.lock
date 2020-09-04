@@ -27,6 +27,14 @@
   revision = "8d10e4a1bae52cd8b81ffdec3445890d6dccab3d"
 
 [[projects]]
+  digest = "1:30bcd005fdaeecabf803cfc57e38ce70ca07f1283be162b89cdf0fea6ebb594a"
+  name = "github.com/frankban/quicktest"
+  packages = ["."]
+  pruneopts = ""
+  revision = "d71875cc1e6131a1acd7e89ba7aeabf8cc29c9b7"
+  version = "v1.10.2"
+
+[[projects]]
   digest = "1:eb53021a8aa3f599d29c7102e65026242bdedce998a54837dc67f14b6a97c5fd"
   name = "github.com/fsnotify/fsnotify"
   packages = ["."]
@@ -41,6 +49,29 @@
   pruneopts = ""
   revision = "a0583e0143b1624142adab07e0e97fe106d99561"
   version = "v1.3.0"
+
+[[projects]]
+  digest = "1:1e5b1e14524ed08301977b7b8e10c719ed853cbf3f24ecb66fae783a46f207a6"
+  name = "github.com/google/btree"
+  packages = ["."]
+  pruneopts = ""
+  revision = "4030bb1f1f0c35b30ca7009e9ebd06849dd45306"
+  version = "v1.0.0"
+
+[[projects]]
+  digest = "1:5c76e5d4adc937e8047abec4d47945f62cab09fbd2845f6f94def75a93b30fee"
+  name = "github.com/google/go-cmp"
+  packages = [
+    "cmp",
+    "cmp/cmpopts",
+    "cmp/internal/diff",
+    "cmp/internal/flags",
+    "cmp/internal/function",
+    "cmp/internal/value",
+  ]
+  pruneopts = ""
+  revision = "d2fcc899bdc2d134b7c00e36137260db963e193c"
+  version = "v0.5.2"
 
 [[projects]]
   digest = "1:dbbeb8ddb0be949954c8157ee8439c2adfd8dc1c9510eb44a6e58cb68c3dce28"
@@ -123,6 +154,22 @@
   version = "v0.7.0"
 
 [[projects]]
+  digest = "1:c2d5e812c4ab42688df7d01b85b5b3f1ec65135721ee5efdaf579ebd80b12e02"
+  name = "github.com/kr/pretty"
+  packages = ["."]
+  pruneopts = ""
+  revision = "ead452280cd055b2ae8a7f0db5eb37a878d902f7"
+  version = "v0.2.1"
+
+[[projects]]
+  digest = "1:e1b23b6ab2d19b5938bde2916f5b21573c0a47276e3dcfd696b6f729b4e8f541"
+  name = "github.com/kr/text"
+  packages = ["."]
+  pruneopts = ""
+  revision = "702c74938df48b97370179f33ce2107bd7ff3b3e"
+  version = "v0.2.0"
+
+[[projects]]
   branch = "master"
   digest = "1:72ac8b303addf8e2ba29c3fab8feb6630d05b272ae07f9f60b281ad9ee97b61f"
   name = "github.com/kylelemons/go-gypsy"
@@ -166,12 +213,44 @@
   version = "v1.1.0"
 
 [[projects]]
+  branch = "master"
+  digest = "1:5f0faa008e8ff4221b55a1a5057c8b02cb2fd68da6a65c9e31c82b72cbc836d0"
+  name = "github.com/petar/GoLLRB"
+  packages = ["llrb"]
+  pruneopts = ""
+  revision = "33fb24c13b99c46c93183c291836c573ac382536"
+
+[[projects]]
+  digest = "1:4709c61d984ef9ba99b037b047546d8a576ae984fb49486e48d99658aa750cd5"
+  name = "github.com/peterbourgon/diskv"
+  packages = ["."]
+  pruneopts = ""
+  revision = "0be1b92a6df0e4f5cb0a5d15fb7f643d0ad93ce6"
+  version = "v3.0.0"
+
+[[projects]]
+  digest = "1:123a05e529da275a1f0deb61bd8adfd1d8ef0ecd642120c8c1bf79ab8f91cf33"
+  name = "github.com/rogpeppe/fastuuid"
+  packages = ["."]
+  pruneopts = ""
+  revision = "10c3923834d38e951ae8f627bfec2dc632c5b6cb"
+  version = "v1.2.0"
+
+[[projects]]
   digest = "1:275de36a5db8e4b182f5e6527123fc4f33f5b7f7304eb33e7d06072c5a4801c4"
   name = "github.com/rs/cors"
   packages = ["."]
   pruneopts = ""
   revision = "ca016a06a5753f8ba03029c0aa5e54afb1bf713f"
   version = "v1.4.0"
+
+[[projects]]
+  branch = "master"
+  digest = "1:a0111d42081046584e3740ef408b306b006344fb97a96c2ffc90a5184fae34e9"
+  name = "github.com/shabbyrobe/xmlwriter"
+  packages = ["."]
+  pruneopts = ""
+  revision = "9fca06d00ffa0a458732d1cb904f4b7a4846c8b2"
 
 [[projects]]
   digest = "1:8cf46b6c18a91068d446e26b67512cf16f1540b45d90b28b9533706a127f0ca6"
@@ -233,6 +312,14 @@
   version = "v1.0.1"
 
 [[projects]]
+  digest = "1:f4b472253e43edfd9e44e4460fbf3614b6aaf48da9011feee727e1ac671af8d0"
+  name = "github.com/tealeg/xlsx"
+  packages = ["."]
+  pruneopts = ""
+  revision = "9dabf761446c365f70bce55fe5e384b8fadb9c80"
+  version = "v3.2.0"
+
+[[projects]]
   digest = "1:2a34b37d017e0e03a1683598ce909369e04a84bd082ccab9528dd68ed384b987"
   name = "github.com/ziutek/mymysql"
   packages = [
@@ -276,6 +363,8 @@
   digest = "1:3ebe3e1e2ca1fbe958c864b3ff5eb67a16d35031f87a622820efb9a5aa322756"
   name = "golang.org/x/text"
   packages = [
+    "encoding",
+    "encoding/internal/identifier",
     "internal/gen",
     "internal/triegen",
     "internal/ucd",
@@ -285,6 +374,17 @@
   ]
   pruneopts = ""
   revision = "5c1cf69b5978e5a34c5f9ba09a83e56acc4b7877"
+
+[[projects]]
+  branch = "master"
+  digest = "1:a5a7a1a9560c0eb1f8b32c40da2e71bd2a05b9ff9e1ea294461c7dbe0d24c6bc"
+  name = "golang.org/x/xerrors"
+  packages = [
+    ".",
+    "internal",
+  ]
+  pruneopts = ""
+  revision = "5ec99f83aff198f5fbd629d6c8d8eb38a04218ca"
 
 [[projects]]
   digest = "1:f0620375dd1f6251d9973b5f2596228cc8042e887cd7f827e4220bc1ce8c30e2"
@@ -309,6 +409,7 @@
     "github.com/sirupsen/logrus",
     "github.com/spf13/viper",
     "github.com/stoewer/go-strcase",
+    "github.com/tealeg/xlsx",
     "golang.org/x/crypto/bcrypt",
   ]
   solver-name = "gps-cdcl"

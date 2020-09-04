@@ -46,3 +46,7 @@ required = [
  branch = "master"
  source = "github.com/documatrix/service"
 
+
+[[constraint]]
+  name = "github.com/tealeg/xlsx"
+  version = "3.2.0"

@@ -57,6 +57,14 @@ namespace Api
     return params
   }
 
+  export function buildURL( endpoint: string, params: object = {} ): string {
+    let url = `${API_ROOT}${endpoint}?session=${encodeURIComponent(window.sessionStorage.getItem( 'session' ))}`;
+    each( params, (v, k) => {
+      url += '&' + k + '=' + encodeURIComponent(v);
+    });
+    return url;
+  }
+
   export function HEAD( endpoint: string, args: object ) : Promise<any> {
     return call( 'HEAD', endpoint, args );
   }

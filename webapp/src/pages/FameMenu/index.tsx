@@ -74,6 +74,9 @@ class FameMenu extends React.Component<any,any> {
             if (this.uiStore.currentUser.RightType === RightType.ADMIN) {
                 entries.push(this.makeEntry("users", "user", null));
             }
+            if (this.uiStore.currentUser.RightType === RightType.ADMIN) {
+                entries.push(this.makeEntry("statistics", "table", null));
+            }
             entries.push(this.makeEntry("changePassword", "setting", null));
         }
 

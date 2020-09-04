@@ -20,6 +20,7 @@ import Dates from './Dates';
 import { EditDate } from './Dates/edit';
 import DateCategories from './DateCategory';
 import { EditDateCategory } from './DateCategory/edit';
+import Statistics from './Statistics';
 
 const uiStore = UiStore.getInstance();
 const userStore = UserStore.getInstance();
@@ -64,6 +65,7 @@ export class Root extends React.Component {
                                     }
                                 } } />
                                 <Route path="/changePassword" component={ChangePassword} />
+                                <Route path="/statistics" component={Statistics} />
                                 <Route path="/users" exact component={Users} />
                                 <Route path="/users/new" exact component={EditUser} />
                                 <Route path="/users/:id" render={( { match } ) => {

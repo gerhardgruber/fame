@@ -103,6 +103,7 @@ func (s *server) run() {
 	controllers.RegisterOperationsControllerRoutes(webappRouter, config)
 	controllers.RegisterPositionControllerRoutes(webappRouter, config)
 	controllers.RegisterStaticsControllerRoutes(webappRouter, config)
+	controllers.RegisterStatisticsControllerRoutes(webappRouter, config)
 	controllers.RegisterUsersControllerRoutes(webappRouter, config)
 	//router.PathPrefix("/dist").Handler(http.StripPrefix("/dist", http.FileServer(http.Dir(filepath.Join(webserverDir, "dist")))))
 	router.PathPrefix("/static").Handler(http.StripPrefix("/static", http.FileServer(http.Dir(filepath.Join(webserverDir, "webapp")))))

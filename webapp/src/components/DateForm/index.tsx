@@ -126,7 +126,7 @@ class _DateForm extends React.Component<DateFormProps, IDateFormState> {
     }
   }
 
-  renderDateLogButton = (userID: number, present:  boolean): JSX.Element => {
+  renderDateLogButton = (userID: number, present: boolean): JSX.Element => {
     if (!this.props.date || uiStore.currentUser.RightType !== RightType.ADMIN || this.props.date.EndTime > new Date()) {
       return null;
     }
@@ -142,6 +142,26 @@ class _DateForm extends React.Component<DateFormProps, IDateFormState> {
         } ) } )
       } } icon={this.getDateLogIcon( this.props.date.DateLogsByUserID[ userID ] )}>
       {uiStore.T( "DATE_LOG" )}
+    </Button>
+  }
+
+  renderTakeOverDateLogButton(userID: number, present: boolean): JSX.Element {
+    if (!this.props.date || uiStore.currentUser.RightType !== RightType.ADMIN || this.props.date.EndTime > new Date() || this.props.date.DateLogsByUserID[ userID ]) {
+      return null;
+    }
+
+    return <Button onClick={() => {
+      this.props.date.saveDateLog(
+        new DateLog( {
+          UserID: userID,
+          DateID: this.props.date.ID,
+          Present: present,
+          FromTime: this.props.date.StartTime,
+          UntilTime: this.props.date.EndTime
+        } )
+      );
+    }} icon="enter">
+      {uiStore.T( "DATE_TAKE_LOG" )}
     </Button>
   }
 

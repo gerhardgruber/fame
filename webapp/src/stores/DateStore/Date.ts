@@ -136,9 +136,9 @@ export class DateModel {
     this.Description = data.Description;
     this.StartTime = new Date(data.StartTime);
     this.EndTime = new Date(data.EndTime);
-    if (typeof data.Location === "string") {
+    if (typeof data.Location === "string" && data.Location.length > 0) {
       this.Location = data.Location
-    } else if (typeof data.LocationStr === "string") {
+    } else if (typeof data.LocationStr === "string" && data.LocationStr.length > 0) {
       this.Location = data.LocationStr
     } else if (!isNil(data.Location)) {
       this.Location = new Address(data.Location).toString();

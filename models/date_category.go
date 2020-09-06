@@ -4,6 +4,8 @@ var (
 	DateCategoryT = &DateCategory{}
 )
 
+const OperationName = "Einsatz"
+
 type DateCategory struct {
 	FameModel `gorm:"embedded_prefix:dc_"`
 	Name      string

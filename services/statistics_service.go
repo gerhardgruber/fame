@@ -19,7 +19,7 @@ type userStat struct {
 	absent  int
 }
 
-func Attendance(db *gorm.DB, fromDate string, toDate string) ([]uint8, *lib.FameError) {
+func Attendance(db *gorm.DB, fromDate string, toDate string, categoryIDs []uint64) ([]uint8, *lib.FameError) {
 	const timeFormat = "Mon Jan 02 2006 15:04:05 GMT-0700"
 
 	fromTime, err := time.Parse(timeFormat, fromDate)
@@ -54,11 +54,19 @@ func Attendance(db *gorm.DB, fromDate string, toDate string) ([]uint8, *lib.Fame
 	}
 
 	dates := []*models.Date{}
-	err = db.Model(models.DateT).
+	query := db.Model(models.DateT).
 		Preload("DateLogs").
+		Preload("Category").
 		Where(db.L(models.DateT, "StartTime").Ge(fromTime)).
-		Where(db.L(models.DateT, "EndTime").Le(toTime)).
-		Find(&dates).Error
+		Where(db.L(models.DateT, "EndTime").Le(toTime))
+
+	if categoryIDs != nil {
+		query = query.Where(
+			db.L(models.DateT, "CategoryID").In(categoryIDs),
+		)
+	}
+
+	err = query.Find(&dates).Error
 	if err != nil {
 		return nil, lib.DataCorruptionError(fmt.Errorf("Error fetching dates from database! %w", err))
 	}
@@ -76,7 +84,7 @@ func Attendance(db *gorm.DB, fromDate string, toDate string) ([]uint8, *lib.Fame
 			if ok {
 				if !dl.Present {
 					s.absent++
-				} else if dl.FromTime.After(dt.StartTime) || dl.UntilTime.Before(dt.EndTime) {
+				} else if (dt.Category == nil || dt.Category.Name != models.OperationName) && (dl.FromTime.After(dt.StartTime) || dl.UntilTime.Before(dt.EndTime)) {
 					s.partial++
 				} else {
 					s.present++

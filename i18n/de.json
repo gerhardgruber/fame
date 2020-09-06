@@ -107,6 +107,7 @@
   "RIGHT_TYPE_ADMIN": "Administrator",
   "SAVE": "Speichern",
   "SHOW_PAST_DATES": "Vergangene Termine anzeigen",
+  "STATISTICS_DATE_CATEGORY": "Terminart",
   "STATISTICS_FROM_DATE": "Von Datum",
   "STATISTICS_FROM_DATE_NOT_GIVEN": "Von Datum fehlt",
   "STATISTICS_FROM_DATE_PLACEHOLDER": "Von Datum",

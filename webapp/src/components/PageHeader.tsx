@@ -32,7 +32,7 @@ class PageHeader extends React.Component<PageHeaderProps, any> {
                 <div style={{ float: "left" }}>
                     <h1 style={{ color: "rgba(255, 255, 255, 0.85)" }}>{this.uiStore.T("HEADING_" + this.props.name)}</h1>
                 </div>
-                <div style={{ float: 'right', marginTop: '1rem' }}>
+                <div style={{ float: 'right' }}>
                     {buttons}
                 </div>
                 {/* <div style={{ float: "right" }}>

@@ -1,16 +1,13 @@
 import * as React from 'react'
 import { observer } from 'mobx-react';
-import { Menu, Layout, Icon, Button } from 'antd'
+import { Menu, Layout, Icon } from 'antd'
 import { Link } from 'react-router-dom'
 import UiStore from '../../stores/UiStore'
-import StateStore from '../../stores/StateStore'
 import Scroll from 'react-scrollbar'
-import Api from '../../core/Api';
-import { computed } from 'mobx';
 import { RightType } from '../../stores/User';
 
-const { Header, Footer, Sider, Content } = Layout;
-const { SubMenu } = Menu
+const { Sider } = Layout;
+
 @observer
 class FameMenu extends React.Component<any,any> {
     private uiStore : UiStore;
@@ -61,13 +58,12 @@ class FameMenu extends React.Component<any,any> {
                             <span style={{ fontSize: 16 }} >{this.uiStore.currentUser ? this.uiStore.currentUser.getFullName() : ""}</span>
                          </div>)
 
-        let copyright = (<div style={{ display: "inline-block" }}>
-                            <Icon type="copyright" /> {new Date().getFullYear()} Fame Inc.<br />
-                        </div>)
-
         const entries = [];
 
         if ( this.uiStore.currentUser) {
+            if (this.uiStore.currentUser.RightType === RightType.ADMIN) {
+                entries.push(this.makeEntry("dashboard", "dashboard", null));
+            }
             entries.push(this.makeEntry("dates", "calendar", null));
             entries.push(this.makeEntry("date_categories", "container", null));
             //entries.push(this.makeEntry("operations", "notification", null));

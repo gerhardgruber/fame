@@ -21,6 +21,7 @@ import { EditDate } from './Dates/edit';
 import DateCategories from './DateCategory';
 import { EditDateCategory } from './DateCategory/edit';
 import Statistics from './Statistics';
+import Dashboard from './Dashboard';
 
 const uiStore = UiStore.getInstance();
 const userStore = UserStore.getInstance();
@@ -46,6 +47,7 @@ export class Root extends React.Component {
                                         return null;
                                     }
                                 } } />
+                                <Route exact path="/dashboard" component={Dashboard} />
                                 <Route exact path="/dates" component={Dates} />
                                 <Route path="/dates/new" exact component={EditDate} />
                                 <Route path="/dates/:id" render={( { match } ) => {

@@ -343,7 +343,9 @@ class _DateForm extends React.Component<DateFormProps, IDateFormState> {
       gotoDates = <Redirect to="/dates" />;
     }
 
-    const dateCategories = ( dateCategoryStore.dateCategories || [] ).map((dc) => {
+    const dateCategories = ( dateCategoryStore.dateCategories || [] ).sort((a, b) => {
+      return a.Name.localeCompare(b.Name);
+    }).map((dc) => {
       return <Select.Option key={dc.ID} value={dc.ID}>{dc.Name}</Select.Option>
     })
 

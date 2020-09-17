@@ -96,6 +96,7 @@ func (s *server) run() {
 	webappRouter := router.PathPrefix("/api/").Subrouter()
 
 	controllers.RegisterAuthenticationControllerRoutes(webappRouter, config)
+	controllers.RegisterDashboardControllerRoutes(webappRouter, config)
 	controllers.RegisterDateCategoriesControllerRoutes(webappRouter, config)
 	controllers.RegisterDatesControllerRoutes(webappRouter, config)
 	controllers.RegisterDateLogsControllerRoutes(webappRouter, config)

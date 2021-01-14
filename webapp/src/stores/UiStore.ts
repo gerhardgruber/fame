@@ -13,8 +13,6 @@ class UiStore {
 
     @observable public loginTime: Date;
 
-    @observable public dateTypes: Record<string,number>;
-
     @observable public dateFeedbackTypes: Record<string,number>;
 
     @observable public bootstrapped: boolean;
@@ -68,7 +66,6 @@ class UiStore {
 
             this.loggedIn = response.data.data.logged_in;
 
-            this.dateTypes = response.data.data.date_types;
             this.dateFeedbackTypes = response.data.data.date_feedback_types;
         } );
     }

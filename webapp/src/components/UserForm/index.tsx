@@ -3,12 +3,14 @@ import {observer} from 'mobx-react';
 import Page from "../../components/Page";
 import User, { RightType } from "../../stores/User";
 import UiStore from "../../stores/UiStore";
-import { Form, Input, Button } from "antd";
+import { Form, Input, Button, Modal, DatePicker, Row } from "antd";
 import { WrappedFormUtils } from "antd/lib/form/Form";
 import FormItem from "antd/lib/form/FormItem";
 import { Link, Redirect } from 'react-router-dom';
 import UserStore from '../../stores/UserStore';
 import RightTypeSelect from '../RightTypeSelect';
+import moment from 'moment';
+import { PauseAction, PauseType } from '../../stores/PauseAction';
 
 interface UserFormProps {
   user?: User;
@@ -21,7 +23,9 @@ const userStore = UserStore.getInstance();
 @observer
 class _UserForm extends React.Component<UserFormProps> {
   state = {
-    gotoUsers: false
+    gotoUsers: false,
+    pauseDateModal: null,
+    pauseDate: null
   };
 
   save = (e) => {
@@ -64,11 +68,38 @@ class _UserForm extends React.Component<UserFormProps> {
     });
   }
 
+  getPauseButton(pauseData: PauseAction, type: PauseType) {
+    if (!pauseData || pauseData.EndTime) {
+      return <Button onClick={() => {
+        this.setState({
+          pauseDateModal: {
+            caption: "USER_START_PAUSE_DATE",
+            start: true,
+            type: type
+          },
+          pauseDate: new Date()
+        })
+      }}>{uiStore.T('USER_START_PAUSE')}</Button>
+    } else {
+      return <Button onClick={() => {
+        this.setState({
+          pauseDateModal: {
+            caption: "USER_STOP_PAUSE_DATE",
+            start: false,
+            type: type
+          },
+          pauseDate: new Date()
+        })
+      }}>{uiStore.T('USER_STOP_PAUSE')}</Button>
+    }
+  }
+
   render(): JSX.Element {
     const { getFieldDecorator } = this.props.form;
 
     let passwordField = null;
     let deleteButton = null;
+    let pauseFields = null;
     if (!this.props.user) {
       passwordField = <FormItem {...uiStore.formItemLayout} label={uiStore.T("USER_PW")} hasFeedback>
         {getFieldDecorator('PW', {
@@ -78,6 +109,14 @@ class _UserForm extends React.Component<UserFormProps> {
         )}
       </FormItem>
     } else {
+      pauseFields = [
+        <FormItem {...uiStore.formItemLayout} label={uiStore.T("USER_TRAINING_PAUSE")} hasFeedback>
+          {this.getPauseButton(this.props.user.TrainingPause, PauseType.TrainingPause)}
+        </FormItem>,
+        <FormItem {...uiStore.formItemLayout} label={uiStore.T("USER_OPERATION_PAUSE")} hasFeedback>
+          {this.getPauseButton(this.props.user.OperationPause, PauseType.OperationPause)}
+        </FormItem>
+      ]
       deleteButton = <div style={{"display": "inline-block", "marginRight": "1rem"}}>
         <Button onClick={this.deleteUser} type="danger">
           {uiStore.T('DELETE')}
@@ -88,6 +127,46 @@ class _UserForm extends React.Component<UserFormProps> {
     let gotoUsers = null;
     if (this.state.gotoUsers) {
       gotoUsers = <Redirect to="/users" />;
+    }
+
+    let pauseDateModal = null;
+    if (this.state.pauseDateModal) {
+      pauseDateModal = <Modal visible={true} onCancel={
+        () => {
+          this.setState({
+            pauseDateModal: null
+          })
+        }
+      } onOk={() => {
+        if ( this.state.pauseDateModal.start ) {
+          this.props.user.startPause(
+            this.state.pauseDateModal.type,
+            this.state.pauseDate
+          )
+        } else {
+          this.props.user.stopPause(
+            this.state.pauseDateModal.type,
+            this.state.pauseDate
+          )
+        }
+        this.setState({
+          pauseDateModal: null
+        })
+      }}>
+        <Row>
+          {uiStore.T(this.state.pauseDateModal.caption)}
+        </Row>
+        <Row>
+          <DatePicker
+            defaultValue={moment(this.state.pauseDate)}
+            onChange={(date) => {
+              this.setState({
+                pauseDate: date.toDate()
+              })
+            }}
+            />
+        </Row>
+      </Modal>
     }
 
     return  <Form onSubmit={this.save}>
@@ -126,6 +205,7 @@ class _UserForm extends React.Component<UserFormProps> {
                     )}
               </FormItem>
               {passwordField}
+              {pauseFields}
 
               {deleteButton}
               <div style={{"display": "inline-block", "marginRight": "1rem"}}>
@@ -139,6 +219,7 @@ class _UserForm extends React.Component<UserFormProps> {
                 </Button>
               </div>
               {gotoUsers}
+              {pauseDateModal}
             </Form>
   }
 }

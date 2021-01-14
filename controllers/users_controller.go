@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gerhardgruber/fame/lib"
 	"github.com/gerhardgruber/fame/models"
@@ -82,8 +83,15 @@ func getUser(r *http.Request, params map[string]string, db *gorm.DB, sess *model
 		return Error(*serr)
 	}
 
+	trainingPause, operationPause, serr := services.GetCurrentPausesByUserID(userID, db)
+	if serr != nil {
+		return Error(*serr)
+	}
+
 	return Success(map[string]interface{}{
-		"User": user,
+		"User":           user,
+		"TrainingPause":  trainingPause,
+		"OperationPause": operationPause,
 	})
 }
 
@@ -91,7 +99,7 @@ func deleteUser(r *http.Request, params map[string]string, db *gorm.DB, sess *mo
 	id, err := strconv.ParseUint(params["id"], 0, 64)
 	if err != nil {
 		return Error(*lib.InvalidParamsError(
-			fmt.Errorf("User ID could not be parsed: ", err),
+			fmt.Errorf("User ID could not be parsed: %w", err),
 		))
 	}
 
@@ -129,7 +137,7 @@ func updateUserAPI(r *http.Request, params map[string]string, db *gorm.DB, sess 
 	id, err := strconv.ParseUint(params["id"], 0, 64)
 	if err != nil {
 		return Error(*lib.InvalidParamsError(
-			fmt.Errorf("User ID could not be parsed: ", err),
+			fmt.Errorf("User ID could not be parsed: %w", err),
 		))
 	}
 
@@ -253,6 +261,82 @@ func changePassword(r *http.Request, params map[string]string, db *gorm.DB, sess
 	return Success()
 }
 
+func startPause(r *http.Request, params map[string]string, db *gorm.DB, sess *models.Session, c *lib.Config) *reply {
+	if sess.User.RightType != models.AdminUser {
+		return Error(*lib.PrivilegeError(
+			fmt.Errorf("User is not allowed to change pause of any user"),
+		))
+	}
+
+	id, err := strconv.ParseUint(params["id"], 0, 64)
+	if err != nil {
+		return Error(*lib.InvalidParamsError(
+			fmt.Errorf("User ID '%s' could not be parsed: %s", params["id"], err),
+		))
+	}
+
+	type startPauseParams struct {
+		Type      models.PauseType
+		StartTime time.Time
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	spp := startPauseParams{}
+	err = decoder.Decode(&spp)
+	if err != nil {
+		return Error(*lib.InvalidParamsError(
+			fmt.Errorf("Invalid object while decoding startPauseParams: %s", err),
+		))
+	}
+
+	pause, ferr := services.StartPause(id, spp.Type, spp.StartTime, db)
+	if ferr != nil {
+		return Error(*ferr)
+	}
+
+	return Success(map[string]interface{}{
+		"PauseAction": pause,
+	})
+}
+
+func stopPause(r *http.Request, params map[string]string, db *gorm.DB, sess *models.Session, c *lib.Config) *reply {
+	if sess.User.RightType != models.AdminUser {
+		return Error(*lib.PrivilegeError(
+			fmt.Errorf("User is not allowed to change pause of any user"),
+		))
+	}
+
+	id, err := strconv.ParseUint(params["id"], 0, 64)
+	if err != nil {
+		return Error(*lib.InvalidParamsError(
+			fmt.Errorf("User ID '%s' could not be parsed: %s", params["id"], err),
+		))
+	}
+
+	type stopPauseParams struct {
+		Type    models.PauseType
+		EndTime time.Time
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	spp := stopPauseParams{}
+	err = decoder.Decode(&spp)
+	if err != nil {
+		return Error(*lib.InvalidParamsError(
+			fmt.Errorf("Invalid object while decoding stopPauseParams: %s", err),
+		))
+	}
+
+	pause, ferr := services.StopPause(id, spp.Type, spp.EndTime, db)
+	if ferr != nil {
+		return Error(*ferr)
+	}
+
+	return Success(map[string]interface{}{
+		"PauseAction": pause,
+	})
+}
+
 // RegisterUsersControllerRoutes Registers the functions
 func RegisterUsersControllerRoutes(router *mux.Router, config *lib.Config) {
 	router.HandleFunc("/users", serviceWrapperDBAuthenticated("getUsers", getUsers, config)).Methods("GET")
@@ -261,6 +345,8 @@ func RegisterUsersControllerRoutes(router *mux.Router, config *lib.Config) {
 	router.HandleFunc("/users/{id:[0-9]+}", serviceWrapperDBAuthenticated("updateUser", updateUserAPI, config)).Methods("POST")
 	router.HandleFunc("/users/{id:[0-9]+}/delete", serviceWrapperDBAuthenticated("deleteUser", deleteUser, config)).Methods("POST")
 	router.HandleFunc("/users/{id:[0-9]+}/password", serviceWrapperDBAuthenticated("changePassword", changePassword, config)).Methods("POST")
+	router.HandleFunc("/users/{id:[0-9]+}/start_pause", serviceWrapperDBAuthenticated("startPause", startPause, config)).Methods("POST")
+	router.HandleFunc("/users/{id:[0-9]+}/stop_pause", serviceWrapperDBAuthenticated("stopPause", stopPause, config)).Methods("POST")
 
 	router.HandleFunc("/app/v1/users/{id:[0-9]+}", serviceWrapperDBAuthenticated("updateUser", updateUser, config)).Methods("POST")
 	router.HandleFunc("/app/v1/users/{id:[0-9]+}/password", serviceWrapperDBAuthenticated("changePassword", changePassword, config)).Methods("POST")

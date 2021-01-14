@@ -15,6 +15,7 @@ func MigrateDatabase(db *gorm.DB) {
 	db.AutoMigrate(models.MobilePhoneT)
 	db.AutoMigrate(models.MobilePhoneLogT)
 	db.AutoMigrate(models.OperationT)
+	db.AutoMigrate(models.PauseActionT)
 	db.AutoMigrate(models.PositionT)
 	db.AutoMigrate(models.SessionT)
 	db.AutoMigrate(models.UserT)

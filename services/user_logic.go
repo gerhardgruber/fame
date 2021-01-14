@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/gerhardgruber/fame/lib"
 	"github.com/gerhardgruber/fame/models"
@@ -194,4 +195,102 @@ func CheckPassword(user *models.User) *lib.FameError {
 	}
 
 	return nil
+}
+
+func GetCurrentPausesByUserID(userID uint64, db *gorm.DB) (*models.PauseAction, *models.PauseAction, *lib.FameError) {
+	operationPause := &models.PauseAction{}
+	trainingPause := &models.PauseAction{}
+
+	err := db.Model(operationPause).Where(
+		db.L(operationPause, "UserID").Eq(userID),
+	).Where(
+		db.L(operationPause, "Type").Eq(models.OperationPause),
+	).Last(operationPause).Error
+	if err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			operationPause = nil
+		} else {
+			return nil, nil, lib.DataCorruptionError(fmt.Errorf("Error selecting pause actions for user %d! %w", userID, err))
+		}
+	}
+
+	err = db.Model(trainingPause).Where(
+		db.L(trainingPause, "UserID").Eq(userID),
+	).Where(
+		db.L(trainingPause, "Type").Eq(models.TrainingPause),
+	).Last(trainingPause).Error
+	if err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			trainingPause = nil
+		} else {
+			return nil, nil, lib.DataCorruptionError(fmt.Errorf("Error selecting pause actions for user %d! %w", userID, err))
+		}
+	}
+
+	return trainingPause, operationPause, nil
+}
+
+func StartPause(userID uint64, pauseType models.PauseType, date time.Time, db *gorm.DB) (*models.PauseAction, *lib.FameError) {
+	tp, op, ferr := GetCurrentPausesByUserID(userID, db)
+	if ferr != nil {
+		return nil, ferr
+	}
+
+	if pauseType == models.TrainingPause && tp != nil && tp.EndTime == nil {
+		return nil, lib.DataCorruptionError(
+			fmt.Errorf("Error starting training pause for user %d! Training pause is already active", userID),
+		)
+	} else if pauseType == models.OperationPause && op != nil && op.EndTime == nil {
+		return nil, lib.DataCorruptionError(
+			fmt.Errorf("Error starting operation pause for user %d! Operation pause is already active", userID),
+		)
+	}
+
+	pause := &models.PauseAction{
+		UserID:    userID,
+		Type:      pauseType,
+		StartTime: &date,
+	}
+	err := db.Save(pause).Error
+	if err != nil {
+		return nil, lib.DataCorruptionError(
+			fmt.Errorf("Error saving pause for user %d! %w", userID, err),
+		)
+	}
+
+	return pause, nil
+}
+
+func StopPause(userID uint64, pauseType models.PauseType, date time.Time, db *gorm.DB) (*models.PauseAction, *lib.FameError) {
+	tp, op, ferr := GetCurrentPausesByUserID(userID, db)
+	if ferr != nil {
+		return nil, ferr
+	}
+
+	if pauseType == models.TrainingPause && tp == nil {
+		return nil, lib.DataCorruptionError(
+			fmt.Errorf("Error stopping training pause for user %d! There is no training pause active", userID),
+		)
+	} else if pauseType == models.OperationPause && op != nil {
+		return nil, lib.DataCorruptionError(
+			fmt.Errorf("Error stopping operation pause for user %d! There is no operation pause active", userID),
+		)
+	}
+
+	var pause *models.PauseAction
+	if pauseType == models.TrainingPause {
+		pause = tp
+	} else {
+		pause = op
+	}
+
+	pause.EndTime = &date
+	err := db.Save(pause).Error
+	if err != nil {
+		return nil, lib.DataCorruptionError(
+			fmt.Errorf("Error saving pause for user %d! %w", userID, err),
+		)
+	}
+
+	return pause, nil
 }

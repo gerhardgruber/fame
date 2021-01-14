@@ -36,7 +36,6 @@ func statics(w http.ResponseWriter, r *http.Request, c *lib.Config) {
 			"logged_in":           false,
 			"translation_data":    translationData,
 			"language":            lang,
-			"date_types":          models.DateTypes,
 			"date_feedback_types": models.DateFeedbackTypes,
 		})
 		return
@@ -57,7 +56,6 @@ func statics(w http.ResponseWriter, r *http.Request, c *lib.Config) {
 		"translation_data":    translationData,
 		"language":            language,
 		"UserID":              user.ID,
-		"date_types":          models.DateTypes,
 		"date_feedback_types": models.DateFeedbackTypes,
 	})
 }

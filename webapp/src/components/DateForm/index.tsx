@@ -332,10 +332,6 @@ class _DateForm extends React.Component<DateFormProps, IDateFormState> {
   }
 
   render(): JSX.Element {
-    if (!uiStore.dateTypes) {
-      return <Spin />;
-    }
-
     const { getFieldDecorator } = this.props.form;
 
     let gotoDates = null;

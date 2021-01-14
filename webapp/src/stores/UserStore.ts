@@ -24,7 +24,10 @@ export default class UserStore {
 
   public loadUser(id: number): Promise<User> {
     return Api.GET( `/users/${id}`, {} ).then( ( response ) => {
-      return new User( response.data.data.User );
+      const userData = response.data.data.User
+      userData.TrainingPause = response.data.data.TrainingPause;
+      userData.OperationPause = response.data.data.OperationPause;
+      return new User( userData );
     } );
   }
 

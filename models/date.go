@@ -2,22 +2,9 @@ package models
 
 import "time"
 
-type DateType int
-
-const (
-	Training DateType = 1
-
-	Other DateType = 99
-)
-
 var (
 	DateT = &Date{}
 )
-
-var DateTypes = map[string]DateType{
-	"Training": Training,
-	"Other":    Other,
-}
 
 type Date struct {
 	FameModel   `gorm:"embedded_prefix:dt_"`

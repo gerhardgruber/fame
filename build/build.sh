@@ -11,9 +11,7 @@ if [ "${INSTANCE}" = "PROD" ]; then
 else
   export DEV_FOLDER=dev
 fi
-# resolve dependencies
-echo resolve dependencies
-dep ensure -v
+
 export STATUS=$?
 if [ $STATUS -gt 0 ] ; then
     echo Error while resolving dependencies: $STATUS

@@ -153,7 +153,7 @@ class _UserForm extends React.Component<UserFormProps> {
           pauseDateModal: null
         })
       }}>
-        <Row>
+        <Row style={{marginBottom: '0.5rem'}}>
           {uiStore.T(this.state.pauseDateModal.caption)}
         </Row>
         <Row>

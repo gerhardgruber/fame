@@ -9,6 +9,7 @@ import (
 	"github.com/gerhardgruber/fame/lib"
 	"github.com/gerhardgruber/fame/models"
 	"github.com/jinzhu/gorm"
+	log "github.com/sirupsen/logrus"
 )
 
 // GetUsers loads all users
@@ -246,6 +247,8 @@ func StartPause(userID uint64, pauseType models.PauseType, date time.Time, db *g
 		)
 	}
 
+	date = lib.BeginOfDay(date)
+
 	pause := &models.PauseAction{
 		UserID:    userID,
 		Type:      pauseType,
@@ -271,7 +274,7 @@ func StopPause(userID uint64, pauseType models.PauseType, date time.Time, db *go
 		return nil, lib.DataCorruptionError(
 			fmt.Errorf("Error stopping training pause for user %d! There is no training pause active", userID),
 		)
-	} else if pauseType == models.OperationPause && op != nil {
+	} else if pauseType == models.OperationPause && op == nil {
 		return nil, lib.DataCorruptionError(
 			fmt.Errorf("Error stopping operation pause for user %d! There is no operation pause active", userID),
 		)
@@ -284,6 +287,8 @@ func StopPause(userID uint64, pauseType models.PauseType, date time.Time, db *go
 		pause = op
 	}
 
+	date = lib.EndOfDay(date)
+
 	pause.EndTime = &date
 	err := db.Save(pause).Error
 	if err != nil {
@@ -293,4 +298,140 @@ func StopPause(userID uint64, pauseType models.PauseType, date time.Time, db *go
 	}
 
 	return pause, nil
+}
+
+func GetUserStatus(db *gorm.DB, userID uint64) (uint64, uint64, uint64, *lib.FameError) {
+	startDate := time.Now().Add(-1 * time.Hour * 24 * 30)
+
+	groupedPause := map[models.PauseType][][]*time.Time{}
+
+	pauseRecords := []*models.PauseAction{}
+	err := db.Model(models.PauseActionT).Where(
+		db.L(models.PauseActionT, "UserID").Eq(userID),
+	).Where(
+		db.L(models.PauseActionT, "EndTime").Eq(nil).Or(
+			db.L(models.PauseActionT, "EndTime").Ge(startDate),
+		),
+	).Find(&pauseRecords).Error
+	if err != nil {
+		return 0, 0, 0, lib.DataCorruptionError(
+			fmt.Errorf("Error getting pause actions %v! %w", startDate, err),
+		)
+	}
+
+	for _, pauseRecord := range pauseRecords {
+		times := groupedPause[pauseRecord.Type]
+		if times == nil {
+			times = [][]*time.Time{}
+		}
+		groupedPause[pauseRecord.Type] = append(times, []*time.Time{
+			pauseRecord.StartTime,
+			pauseRecord.EndTime,
+		})
+	}
+	log.Debugf("Times: %+v", groupedPause)
+
+	dates := []*models.Date{}
+	err = db.Model(models.DateT).Preload("Category").Where(
+		db.L(models.DateT, "StartTime").Ge(startDate),
+	).Where(
+		db.L(models.DateT, "StartTime").Le(time.Now()),
+	).Find(&dates).Error
+	if err != nil {
+		return 0, 0, 0, lib.DataCorruptionError(
+			fmt.Errorf("Error getting dates since %v! %w", startDate, err),
+		)
+	}
+
+	notColliding := 0
+	parallelDates := []map[uint64]bool{}
+	dateIDs := []uint64{}
+	filteredDates := []*models.Date{}
+	for _, date := range dates {
+		var pauseType models.PauseType
+		if date.Category.Name == models.OperationName {
+			pauseType = models.OperationPause
+		} else {
+			pauseType = models.TrainingPause
+		}
+
+		pauses := groupedPause[pauseType]
+		ignoreDate := false
+		for _, pause := range pauses {
+			if pause[0] == nil {
+				// This is a "corrupt" pause -> ignore it
+				continue
+			}
+			if date.StartTime.After(*pause[0]) && (pause[1] == nil || date.EndTime.Before(*pause[1])) {
+				log.Debugf("Ignoring date %s because of pause %+v", date.Title, pause)
+				ignoreDate = true
+				break
+			}
+		}
+
+		if !ignoreDate {
+			dateIDs = append(dateIDs, date.ID)
+			filteredDates = append(filteredDates, date)
+		}
+	}
+
+	for idx, date := range filteredDates {
+		notColliding++
+		for _, otherDate := range filteredDates[idx+1:] {
+			log.Debugf("Check collision of %s and %s...", date.Title, otherDate.Title)
+
+			if date.StartTime.Equal(otherDate.StartTime) || date.EndTime.Equal(otherDate.EndTime) ||
+				(date.StartTime.Before(otherDate.StartTime) && date.EndTime.After(otherDate.StartTime)) ||
+				(date.StartTime.After(otherDate.StartTime) && date.StartTime.Before(otherDate.EndTime)) {
+				log.Debugf(
+					"Collision between %s and %s: %+v:%+v <-> %+v:%+v",
+					date.Title, otherDate.Title,
+					date.StartTime, date.EndTime,
+					otherDate.StartTime, otherDate.EndTime,
+				)
+				parallelDates = append(parallelDates, map[uint64]bool{
+					date.ID:      true,
+					otherDate.ID: true,
+				})
+				notColliding--
+			}
+		}
+	}
+
+	positive := 0
+	present := 0
+
+	if len(dateIDs) > 0 {
+		err = db.Model(models.DateT).Where(
+			db.L(models.DateT, "ID").In(dateIDs),
+		).Joins(
+			db.InnerJoin(models.DateFeedbackT).On(db.L(models.DateT, "ID"), db.L(models.DateFeedbackT, "DateID")),
+		).Where(
+			db.L(models.DateFeedbackT, "Feedback").Eq(models.DateFeedbackTypeYes),
+		).Where(
+			db.L(models.DateFeedbackT, "UserID").Eq(userID),
+		).Count(&positive).Error
+		if err != nil {
+			return 0, 0, 0, lib.DataCorruptionError(
+				fmt.Errorf("Error getting number of positive dates since %v! %w", startDate, err),
+			)
+		}
+
+		err = db.Model(models.DateT).Where(
+			db.L(models.DateT, "ID").In(dateIDs),
+		).Joins(
+			db.InnerJoin(models.DateLogT).On(db.L(models.DateT, "ID"), db.L(models.DateLogT, "DateID")),
+		).Where(
+			db.L(models.DateLogT, "Present").Eq(true),
+		).Where(
+			db.L(models.DateLogT, "UserID").Eq(userID),
+		).Count(&present).Error
+		if err != nil {
+			return 0, 0, 0, lib.DataCorruptionError(
+				fmt.Errorf("Error getting number of present dates since %v! %w", startDate, err),
+			)
+		}
+	}
+
+	return uint64(notColliding), uint64(positive), uint64(present), nil
 }

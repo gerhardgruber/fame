@@ -135,7 +135,10 @@ func (c *Config) GetDatabaseConnection() (*gorm.DB, *FameError) {
 			fmt.Errorf("Could not connect to database with type \"%s\" and connection string \"%s\"! %s", c.DatabaseType, c.DatabaseConnectionString, err),
 		)
 	}
-	c.databaseConnection = db //.Debug()
+	if log.GetLevel() == log.DebugLevel {
+		db = db.Debug()
+	}
+	c.databaseConnection = db
 	return c.databaseConnection, nil
 }
 

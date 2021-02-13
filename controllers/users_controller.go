@@ -27,8 +27,23 @@ func getUsers(r *http.Request, params map[string]string, db *gorm.DB, sess *mode
 		return Error(*serr)
 	}
 
+	stati := map[uint64][]uint64{}
+	for _, user := range *users {
+		dates, positive, present, ferr := services.GetUserStatus(db, user.ID)
+		if ferr != nil {
+			return Error(*ferr)
+		}
+
+		stati[user.ID] = []uint64{
+			dates,
+			positive,
+			present,
+		}
+	}
+
 	return Success(map[string]interface{}{
 		"Users": users,
+		"Stati": stati,
 	})
 }
 

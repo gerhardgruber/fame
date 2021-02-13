@@ -16,10 +16,10 @@ export default class Dashboard extends Page {
 
   @observable present: number;
 
-  private static _green = "green";
-  private static _orange = "#FF9100";
-  private static _red = "red";
-  private static _yellow = "#FFEA00";
+  public static green = "green";
+  public static orange = "#FF9100";
+  public static red = "red";
+  public static yellow = "#FFEA00";
 
   componentDidMount() {
     Api.GET("/dashboard/status", {}).then((response) => {
@@ -50,16 +50,16 @@ export default class Dashboard extends Page {
     let color: string;
     if ( factor >= 0.75 || this.dates === 0 ) {
       icon = "check-circle";
-      color = Dashboard._green;
+      color = Dashboard.green;
     } else if ( factor >= 0.5 ) {
       icon = "warning";
-      color = Dashboard._yellow;
+      color = Dashboard.yellow;
     } else if ( factor >= 0.25 ) {
       icon = "warning";
-      color = Dashboard._orange;
+      color = Dashboard.orange;
     } else {
       icon = "close-circle";
-      color = Dashboard._red;
+      color = Dashboard.red;
     }
 
     return <Result
@@ -74,6 +74,11 @@ export default class Dashboard extends Page {
     }
 
     return  <div>
+              <Row>
+                <Col md={24} style={{padding: '50px', paddingTop: '0px'}}>
+                  {uiStore.T( 'DASHBOARD_DESCRIPTION' )}
+                </Col>
+              </Row>
               <Row>
                 <Col md={12}>
                   <h2 style={{textAlign: 'center'}}>{uiStore.T('DASHBOARD_FEEDBACK')}</h2>
@@ -97,10 +102,10 @@ export default class Dashboard extends Page {
               </Row>
               <Row>
                 <Col md={24} style={{paddingLeft: '50px'}}>
-                  <Icon type="check-circle" theme="twoTone" twoToneColor={Dashboard._green} style={{fontSize: "2rem", marginRight: '0.5rem'}} />
-                  <Icon type="warning" theme="twoTone" twoToneColor={Dashboard._yellow} style={{fontSize: "2rem", marginRight: '0.5rem'}} />
-                  <Icon type="warning" theme="twoTone" twoToneColor={Dashboard._orange} style={{fontSize: "2rem", marginRight: '0.5rem'}} />
-                  <Icon type="close-circle" theme="twoTone" twoToneColor={Dashboard._red} style={{fontSize: "2rem", marginRight: '0.5rem'}} />
+                  <Icon type="check-circle" theme="twoTone" twoToneColor={Dashboard.green} style={{fontSize: "2rem", marginRight: '0.5rem'}} />
+                  <Icon type="warning" theme="twoTone" twoToneColor={Dashboard.yellow} style={{fontSize: "2rem", marginRight: '0.5rem'}} />
+                  <Icon type="warning" theme="twoTone" twoToneColor={Dashboard.orange} style={{fontSize: "2rem", marginRight: '0.5rem'}} />
+                  <Icon type="close-circle" theme="twoTone" twoToneColor={Dashboard.red} style={{fontSize: "2rem", marginRight: '0.5rem'}} />
                 </Col>
               </Row>
             </div>

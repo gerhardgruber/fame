@@ -1,0 +1,10 @@
+.slanted:after {
+  content: '';
+  position: absolute;
+  right: -80px;
+  top: 0;
+  width: 0;
+  height: 0;
+  border-top: 100vh solid #343d46;
+  border-right: 80px solid transparent;
+}

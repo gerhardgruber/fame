@@ -12,7 +12,7 @@ abstract class Page<P = any, S = any> extends React.Component<P, S> {
 
   render(): JSX.Element {
     return (
-      <Layout>
+      <Layout style={{backgroundColor: 'white'}}>
           <PageHeader name={this.pageTitle()} renderButtons={this.renderButtons.bind( this )} />
           <Layout style={{padding: '10px', backgroundColor: 'white'}}>
             {this.renderContent()}

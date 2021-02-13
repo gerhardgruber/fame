@@ -24,7 +24,7 @@ type CreateUpdateDateParams struct {
 func GetDates(db *gorm.DB, loadPastDates bool, search string) (dates *[]models.Date, serr *lib.FameError) {
 	dates = &[]models.Date{}
 
-	q := db.Order(db.L(models.DateT, "StartTime").OrderAsc())
+	q := db.Order(db.L(models.DateT, "StartTime").OrderDesc())
 	if !loadPastDates {
 		q = q.Where(
 			db.L(models.DateT, "EndTime").Gt(time.Now()),
@@ -43,7 +43,9 @@ func GetDates(db *gorm.DB, loadPastDates bool, search string) (dates *[]models.D
 		)
 	}
 
-	if err := q.Preload("Category").Preload("Location").Preload("CreatedBy").Preload("DateFeedbacks").Find(dates).Error; err != nil {
+	if err := q.Preload("Category").Preload("Location").
+		Preload("CreatedBy").Preload("DateFeedbacks").
+		Find(dates).Error; err != nil {
 		return nil, lib.DataCorruptionError(
 			fmt.Errorf("Could not get dates: %s", err),
 		)

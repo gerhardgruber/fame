@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 )
 
 // FileExists can be used to check if the given file exists.
@@ -22,4 +23,14 @@ func ReadValue(name string) string {
 
 	value := strings.TrimSpace(scanner.Text())
 	return value
+}
+
+func BeginOfDay(t time.Time) time.Time {
+	year, month, day := t.Date()
+	return time.Date(year, month, day, 0, 0, 0, 0, t.Location())
+}
+
+func EndOfDay(t time.Time) time.Time {
+	year, month, day := t.Date()
+	return time.Date(year, month, day, 23, 59, 59, 0, t.Location())
 }

@@ -9,6 +9,8 @@ export default class UserStore {
 
   @observable public users: User[];
 
+  @observable public stati: any[];
+
   constructor() {
     UserStore.instance = this;
   }
@@ -33,6 +35,7 @@ export default class UserStore {
 
   public loadUsers(): Promise<User[]> {
     return Api.GET( '/users', {} ).then( ( response ) => {
+      this.stati = response.data.data.Stati;
       this.users = map( response.data.data.Users, ( u: any ) => {
         return new User( u );
       } );

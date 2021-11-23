@@ -96,11 +96,11 @@ func Attendance(db *gorm.DB, fromDate string, toDate string, categoryIDs []uint6
 	for i, dt := range dates {
 		overlap := false
 		var prevDateID uint64
-		if i > 0 {
+		if (dt.Category == nil || dt.Category.Name != models.OperationName) && i > 0 {
 			prevDateID = dates[i-1].ID
 			prevDay, prevMon, prevYear := dates[i-1].StartTime.Date()
 			curDay, curMon, curYear := dt.StartTime.Date()
-			if prevDay == curDay && prevMon == curMon && prevYear == curYear {
+			if (dates[i-1].Category == nil || dates[i-1].Category.Name != models.OperationName) && prevDay == curDay && prevMon == curMon && prevYear == curYear {
 				if !dt.EndTime.Before(dates[i-1].StartTime) && !dates[i-1].EndTime.Before(dt.StartTime) {
 					overlap = true
 				}

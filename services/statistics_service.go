@@ -125,6 +125,12 @@ func Attendance(db *gorm.DB, fromDate string, toDate string, categoryIDs []uint6
 						// user was at overlapped date
 						s.overlaps++
 						userRow.AddCell().SetString("")
+
+					} else if overlap && absent[dl.UserID][prevDateID] {
+						// user was not at overlapped date and not at dt
+						s.overlaps++
+						userRow.AddCell().SetString("")
+
 					} else {
 						s.absent++
 						userRow.AddCell().SetInt(0)

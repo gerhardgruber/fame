@@ -3,14 +3,6 @@ set -e
 echo Server build starting
 echo Instanz:     ${INSTANCE}
 echo Tag-Version: ${TAG_VERSION}
-export FAME_SERVER=doctype.documatrix.com
-
-# set folder DEV Prefix
-if [ "${INSTANCE}" = "PROD" ]; then
-  export DEV_FOLDER=
-else
-  export DEV_FOLDER=dev
-fi
 
 export STATUS=$?
 if [ $STATUS -gt 0 ] ; then
@@ -32,9 +24,9 @@ fi
 
 # copy to remote server
 echo copy to remote server
-scp $GOPATH/bin/fame_server sophy@${FAME_SERVER}:/opt/${DEV_FOLDER}/fame_server/delivery/bin/
-scp ./i18n/* sophy@${FAME_SERVER}:/opt/${DEV_FOLDER}/fame_server/delivery/i18n/
-scp ./package.json sophy@${FAME_SERVER}:/opt/${DEV_FOLDER}/fame_server/delivery/
+cp $GOPATH/bin/fame_server /opt/fame_server/delivery/bin/
+cp ./i18n/* /opt/fame_server/delivery/i18n/
+cp ./package.json /opt/fame_server/delivery/
 export STATUS=$?
 if [ $STATUS -gt 0 ] ; then
     echo Error while copying: $STATUS
@@ -42,22 +34,11 @@ if [ $STATUS -gt 0 ] ; then
 fi
 
 # start the service on the remote server
-echo stop, copy and start the service on the remote server
-ssh sophy@${FAME_SERVER} << FINISHED
-    if [ "${INSTANCE}" = "TEST" ]; then
-      sudo stop fame_server_dev
-    else
-      sudo stop fame_server
-    fi
-    mv /opt/${DEV_FOLDER}/fame_server/delivery/bin/* /opt/${DEV_FOLDER}/fame_server/bin/
-    mv /opt/${DEV_FOLDER}/fame_server/delivery/i18n/* /opt/${DEV_FOLDER}/fame_server/i18n/
-    mv /opt/${DEV_FOLDER}/fame_server/delivery/package.json /opt/${DEV_FOLDER}/fame_server/
-    if [ "${INSTANCE}" = "TEST" ]; then
-      sudo start fame_server_dev
-    else
-      sudo start fame_server
-    fi
-FINISHED
+sudo service fame_server stop
+mv /opt/fame_server/delivery/bin/* /opt/fame_server/bin/
+mv /opt/fame_server/delivery/i18n/* /opt/fame_server/i18n/
+mv /opt/fame_server/delivery/package.json /opt/fame_server/
+sudo service start fame_server
 
 export STATUS=$?
 if [ $STATUS -gt 0 ] ; then
@@ -95,11 +76,10 @@ if [ $STATUS -gt 0 ] ; then
 fi
 
 sed -i 's/bundle.js/bundle-'"${VERSION}"'.js/g' webapp/dist.html
-scp webapp/dist/* sophy@${FAME_SERVER}:/opt/${DEV_FOLDER}/fame_server/webapp/
-scp webapp/dist/bundle.js sophy@${FAME_SERVER}:/opt/${DEV_FOLDER}/fame_server/webapp/bundle-${VERSION}.js
-#scp webapp/static/*.png sophy@${FAME_SERVER}:/opt/${DEV_FOLDER}/fame_server/webapp/
-scp webapp/static/*.jpg sophy@${FAME_SERVER}:/opt/${DEV_FOLDER}/fame_server/webapp/
-scp webapp/dist.html sophy@${FAME_SERVER}:/opt/${DEV_FOLDER}/fame_server/webapp/index.html
+cp webapp/dist/* /opt/fame_server/webapp/
+cp webapp/dist/bundle.js /opt/fame_server/webapp/bundle-${VERSION}.js
+cp webapp/static/*.jpg /opt/fame_server/webapp/
+cp webapp/dist.html /opt/fame_server/webapp/index.html
 export STATUS=$?
 if [ $STATUS -gt 0 ] ; then
     echo Error while copying: $STATUS

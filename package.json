@@ -81,7 +81,7 @@
     "react-router": "^4.3.0",
     "react-router-dom": "^4.3.1",
     "react-scrollbar": "^0.5.6",
-    "recharts": "^1.8.5"
+    "recharts": "^2.1.14"
   },
   "theme": {
     "primary-color": "#a4b034"

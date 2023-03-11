@@ -38,7 +38,7 @@ sudo service fame_server stop
 mv /opt/fame_server/delivery/bin/* /opt/fame_server/bin/
 mv /opt/fame_server/delivery/i18n/* /opt/fame_server/i18n/
 mv /opt/fame_server/delivery/package.json /opt/fame_server/
-sudo service start fame_server
+sudo service fame_server start
 
 export STATUS=$?
 if [ $STATUS -gt 0 ] ; then

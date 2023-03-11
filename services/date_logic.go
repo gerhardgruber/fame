@@ -128,6 +128,17 @@ func GetDateByID(db *gorm.DB, id uint64) (date *models.Date, ferr *lib.FameError
 }
 
 func UpdateDateFeedback(db *gorm.DB, id uint64, userID uint64, feedback models.DateFeedbackType) (df *models.DateFeedback, ferr *lib.FameError) {
+	date, ferr := GetDateByID(db, id)
+	if ferr != nil {
+		return nil, ferr
+	}
+
+	if date.Closed {
+		return nil, lib.PrivilegeError(
+			fmt.Errorf("date %d is closed", id),
+		)
+	}
+
 	df = &models.DateFeedback{}
 	err := db.Model(df).Where(db.L(df, "UserID").Eq(userID)).
 		Where(db.L(df, "DateID").Eq(id)).

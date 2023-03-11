@@ -24,9 +24,9 @@ fi
 
 # copy to remote server
 echo copy to remote server
-cp $GOPATH/bin/fame_server /opt/fame_server/delivery/bin/
-cp ./i18n/* /opt/fame_server/delivery/i18n/
-cp ./package.json /opt/fame_server/delivery/
+cp -v $GOPATH/bin/fame_server /opt/fame_server/delivery/bin/
+cp -v ./i18n/* /opt/fame_server/delivery/i18n/
+cp -v ./package.json /opt/fame_server/delivery/
 export STATUS=$?
 if [ $STATUS -gt 0 ] ; then
     echo Error while copying: $STATUS
